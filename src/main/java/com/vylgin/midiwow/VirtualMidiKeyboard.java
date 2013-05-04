@@ -118,7 +118,7 @@ public class VirtualMidiKeyboard extends JPanel{
 
         private Color keyColor;
         
-        public void mouseClicked(MouseEvent e) {
+          public void mouseClicked(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
             label.setBackground(Color.RED);
             VirtualMidiKeyboard.this.repaint();

@@ -62,6 +62,7 @@ public class MainJFrame extends JFrame {
         pianoKeysPanel = new VirtualMidiKeyboard();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("MidiWoW");
 
         midiDevicesLabel.setText("Midi Devices:");
 
@@ -237,11 +238,8 @@ public class MainJFrame extends JFrame {
                     try {
                         Robot robot = new Robot();
                         robot.keyPress(keyEvent);
-                        
                         System.out.println("Pressed key: " + KeyEvent.getKeyText(keyEvent));
-                        listModel.addElement("Pressed key: " + KeyEvent.getKeyText(keyEvent));
-                        midiMessagesList.repaint();
-                        
+                        listModel.addElement("Pressed key: " + KeyEvent.getKeyText(keyEvent));                                                
                     } catch (AWTException e) {
 //                        e.printStackTrace();
                     }
@@ -250,14 +248,44 @@ public class MainJFrame extends JFrame {
                     try {
                         Robot robot = new Robot();
                         robot.keyRelease(keyEvent);
-                        
                         System.out.println("Released key: " + KeyEvent.getKeyText(keyEvent));
                         listModel.addElement("Released key: " + KeyEvent.getKeyText(keyEvent));
-                        midiMessagesList.repaint();
                     } catch (AWTException e) {
 //                        e.printStackTrace();
                     }
                     break;
+                default:
+                    midiMessagesList.repaint();
+            }
+        }
+        
+        private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
+            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
+                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
+            }
+            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
+                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
+            }
+            //----------------------------------------
+            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 72) {
+                eventKeyEmit(KeyEvent.VK_S, MidiKeyEvent.KEY_PRESS_EVENT);
+            }
+            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 72) {
+                eventKeyEmit(KeyEvent.VK_S, MidiKeyEvent.KEY_RELEASE_EVENT);
+            }
+            //----------------------------------------
+            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 71) {
+                eventKeyEmit(KeyEvent.VK_A, MidiKeyEvent.KEY_PRESS_EVENT);
+            }
+            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 71) {
+                eventKeyEmit(KeyEvent.VK_A, MidiKeyEvent.KEY_RELEASE_EVENT);
+            }
+            //----------------------------------------
+            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 74) {
+                eventKeyEmit(KeyEvent.VK_D, MidiKeyEvent.KEY_PRESS_EVENT);
+            }
+            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 74) {
+                eventKeyEmit(KeyEvent.VK_D, MidiKeyEvent.KEY_RELEASE_EVENT);
             }
         }
 
@@ -274,14 +302,7 @@ public class MainJFrame extends JFrame {
                         + ", length = " + event.getLength();
 
                 System.out.println(midiMessage);
-                
-//                listModel.addElement(midiMessage);
-                
-//                int lastIndex = midiMessagesList.getModel().getSize() - 1;               
-//                if (lastIndex >= 0) {
-//                    midiMessagesList.ensureIndexIsVisible(lastIndex);
-//                }
-                
+                               
                 if (listModel.getSize() >= 10) {
                     listModel.remove(0);
                 }
@@ -296,45 +317,7 @@ public class MainJFrame extends JFrame {
                     vmk.backlightOffKey(event.getData1());
                 }
                 
-                //----------------------------------------
-                
-                if (event.getStatus() == NOTE_ON_MIDI_SIGNAL && event.getData1() == 73) {
-                    eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
-                }
-
-                if (event.getStatus() == NOTE_OFF_MIDI_SIGNAL && event.getData1() == 73) {
-                    eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
-                }
-                
-                //----------------------------------------
-                
-                if (event.getStatus() == NOTE_ON_MIDI_SIGNAL && event.getData1() == 72) {
-                    eventKeyEmit(KeyEvent.VK_S, MidiKeyEvent.KEY_PRESS_EVENT);
-                }
-
-                if (event.getStatus() == NOTE_OFF_MIDI_SIGNAL && event.getData1() == 72) {
-                    eventKeyEmit(KeyEvent.VK_S, MidiKeyEvent.KEY_RELEASE_EVENT);
-                }
-                
-                //----------------------------------------
-                
-                if (event.getStatus() == NOTE_ON_MIDI_SIGNAL && event.getData1() == 71) {
-                    eventKeyEmit(KeyEvent.VK_A, MidiKeyEvent.KEY_PRESS_EVENT);
-                }
-
-                if (event.getStatus() == NOTE_OFF_MIDI_SIGNAL && event.getData1() == 71) {
-                    eventKeyEmit(KeyEvent.VK_A, MidiKeyEvent.KEY_RELEASE_EVENT);
-                }
-                
-                //----------------------------------------
-                
-                if (event.getStatus() == NOTE_ON_MIDI_SIGNAL && event.getData1() == 74) {
-                    eventKeyEmit(KeyEvent.VK_D, MidiKeyEvent.KEY_PRESS_EVENT);
-                }
-
-                if (event.getStatus() == NOTE_OFF_MIDI_SIGNAL && event.getData1() == 74) {
-                    eventKeyEmit(KeyEvent.VK_D, MidiKeyEvent.KEY_RELEASE_EVENT);
-                }
+                bindKeys(event.getStatus(), event.getData1());
             }
         }
 
