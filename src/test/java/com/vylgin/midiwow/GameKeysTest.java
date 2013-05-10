@@ -75,6 +75,7 @@ public class GameKeysTest {
         gameKeys.setKeyboardKeys(note1, keyboardKeys1);
         gameKeys.saveKeys("WoW");
         
+        gameKeys.createEmptyKeys("WoW2");
         gameKeys.loadKeys("WoW2");        
         ArrayList<Integer> keyboardKeys2 = new ArrayList<Integer>();
         keyboardKeys2.add(3);
@@ -86,7 +87,8 @@ public class GameKeysTest {
         test.add(-1);
         
         gameKeys.setKeyboardKeys(note2, keyboardKeys2);
-        gameKeys.saveKeys("WoW2");       
+        gameKeys.saveKeys("WoW2");    
+        gameKeys.loadKeys("WoW2");
         assertArrayEquals(keyboardKeys2.toArray(), gameKeys.getKeyboardKeys(note2).toArray());       
         assertArrayEquals(gameKeys.getKeyboardKeys(note1).toArray(), test.toArray());
         

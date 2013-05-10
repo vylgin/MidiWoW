@@ -57,10 +57,27 @@ public class GameKeys {
         return midiKeys.get(note);
     }
     
+    public void createEmptyKeys(String gameName) {
+        try {
+            String fName = gameName + ".properties";
+            File currentDir = new File(".");
+            String filePath = currentDir.getCanonicalPath() + dirSeparator + fName;
+                          
+            for (int i = 0; i <= midiKeySize; i++) {
+                props.setProperty(String.valueOf(i), String.valueOf(emptyNote));
+            }
+            
+            FileOutputStream out = new FileOutputStream(filePath);
+            props.store(out, "Created with createEmptyKeys method");
+            
+        } catch (IOException ex) {
+            Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     public void saveKeys(String gameName) {      
         try {
-            gameKeys = null;
-            
             fileName = gameName + ".properties";
             File currentDir = new File(".");
             String filePath = currentDir.getCanonicalPath() + dirSeparator + fileName;    
@@ -76,7 +93,7 @@ public class GameKeys {
             }
             
             FileOutputStream out = new FileOutputStream(filePath);
-            props.store(out, "This is an optional header comment string");
+            props.store(out, "Created with saveKeys method");
         } catch (IOException e) {
             System.out.println("IO Error!");
             e.printStackTrace();
@@ -84,8 +101,6 @@ public class GameKeys {
     }
     
     public void loadKeys(String gameName) {
-        gameKeys = null;
-        
         try {
             fileName = gameName + ".properties";
             File currentDir = new File(".");
