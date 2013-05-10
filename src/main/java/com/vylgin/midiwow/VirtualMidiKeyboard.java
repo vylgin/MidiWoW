@@ -115,13 +115,19 @@ public class VirtualMidiKeyboard extends JPanel{
     }
     
     public class keysMouseListener implements MouseListener{
-
         private Color keyColor;
-        
-          public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
             label.setBackground(Color.RED);
             VirtualMidiKeyboard.this.repaint();
+            
+            BindKeys bind = new BindKeys();
+            bind.setSize(300, 300);
+            bind.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            bind.setVisible(true);
+            
+            bind.setNumber(Integer.valueOf(label.getText()));
+            bind.showNumber();
         }
 
         public void mousePressed(MouseEvent e) {

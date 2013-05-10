@@ -260,33 +260,22 @@ public class MainJFrame extends JFrame {
         }
         
         private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
-            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
-                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
+            
+            
+            switch (statusMidiKey) {
+                case NOTE_ON_MIDI_SIGNAL:
+                    eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
+                    break;
+                case NOTE_OFF_MIDI_SIGNAL:
+                    eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
+                    break;
             }
-            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
-                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
-            }
-            //----------------------------------------
-            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 72) {
-                eventKeyEmit(KeyEvent.VK_S, MidiKeyEvent.KEY_PRESS_EVENT);
-            }
-            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 72) {
-                eventKeyEmit(KeyEvent.VK_S, MidiKeyEvent.KEY_RELEASE_EVENT);
-            }
-            //----------------------------------------
-            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 71) {
-                eventKeyEmit(KeyEvent.VK_A, MidiKeyEvent.KEY_PRESS_EVENT);
-            }
-            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 71) {
-                eventKeyEmit(KeyEvent.VK_A, MidiKeyEvent.KEY_RELEASE_EVENT);
-            }
-            //----------------------------------------
-            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 74) {
-                eventKeyEmit(KeyEvent.VK_D, MidiKeyEvent.KEY_PRESS_EVENT);
-            }
-            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 74) {
-                eventKeyEmit(KeyEvent.VK_D, MidiKeyEvent.KEY_RELEASE_EVENT);
-            }
+//            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
+//                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
+//            }
+//            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
+//                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
+//            }
         }
 
         @Override
