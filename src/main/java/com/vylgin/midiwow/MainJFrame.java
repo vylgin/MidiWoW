@@ -7,7 +7,13 @@ package com.vylgin.midiwow;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
@@ -18,6 +24,7 @@ import javax.sound.midi.Transmitter;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * The main frame at which there are widgets
@@ -25,13 +32,15 @@ import javax.swing.JFrame;
  */
 public class MainJFrame extends JFrame {
     
-    final DefaultListModel listModel = new DefaultListModel();
-    
-//    public void setMidiMessageToList(String midiMessage) {
-//        System.out.println(midiMessage);
-//        listModel.addElement(midiMessage);
-//    }
-    
+    private final DefaultListModel listModel = new DefaultListModel();
+    private DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>();
+    private static final Pattern pattern = Pattern.compile("[a-zA-Z\\d\\s]+");
+    private static final String propertiesNameDir = "properties";
+    private static final String fileExtension = ".properties";
+    private static final String dirSeparator = System.getProperty("file.separator");
+    private static final String propertiesDirPath = "." + dirSeparator + propertiesNameDir;
+    private static final File dirProperties = new File(propertiesDirPath);
+       
     public MainJFrame getFrame() {
         return this;
     }
@@ -40,7 +49,37 @@ public class MainJFrame extends JFrame {
      * Creates new form MainJFrame
      */
     public MainJFrame() {
+        if (dirProperties.exists()) {
+            for (String fileName : dirProperties.list()) {
+                System.out.println(fileName);
+            }
+        } else {
+            dirProperties.mkdir();
+            String defaultGame = "default";
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.createEmptyKeys(defaultGame);
+            gameKeys.saveKeys(defaultGame);
+        }
+                
         initComponents();
+        selectGameComboBox.setModel(comboBoxModel);
+        initializeGameComboBox();
+    }
+    
+    private void initializeGameComboBox() {
+        for (String file : dirProperties.list()) {
+            int i = file.lastIndexOf('.');
+            String fileName = file.substring(0, i);
+            String fileExtension = file.substring(i, file.length());
+            if (fileExtension.equals(this.fileExtension)) {
+                selectGameComboBox.addItem(fileName);   
+            }
+        }
+    }
+    
+    private void loadSelectedGameKeys() {
+        GameKeys gameKeys = GameKeys.getInstance();
+        gameKeys.loadKeys((String) selectGameComboBox.getSelectedItem());
     }
 
     /**
@@ -60,6 +99,13 @@ public class MainJFrame extends JFrame {
         midiMessagesList = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         pianoKeysPanel = new VirtualMidiKeyboard();
+        selectGameComboBox = new javax.swing.JComboBox();
+        saveGameButton = new javax.swing.JButton();
+        createGameKeysButton = new javax.swing.JButton();
+        deleteGameKeysButton = new javax.swing.JButton();
+        saveAsButton = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MidiWoW");
@@ -94,7 +140,7 @@ public class MainJFrame extends JFrame {
     pianoKeysPanel.setLayout(pianoKeysPanelLayout);
     pianoKeysPanelLayout.setHorizontalGroup(
         pianoKeysPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGap(0, 125, Short.MAX_VALUE)
+        .addGap(0, 790, Short.MAX_VALUE)
     );
     pianoKeysPanelLayout.setVerticalGroup(
         pianoKeysPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -102,6 +148,43 @@ public class MainJFrame extends JFrame {
     );
 
     jScrollPane2.setViewportView(pianoKeysPanel);
+
+    selectGameComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    selectGameComboBox.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            selectGameComboBoxActionPerformed(evt);
+        }
+    });
+
+    saveGameButton.setText("Save");
+    saveGameButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            saveGameButtonActionPerformed(evt);
+        }
+    });
+
+    createGameKeysButton.setText("Create");
+    createGameKeysButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            createGameKeysButtonActionPerformed(evt);
+        }
+    });
+
+    deleteGameKeysButton.setText("Delete");
+    deleteGameKeysButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            deleteGameKeysButtonActionPerformed(evt);
+        }
+    });
+
+    saveAsButton.setText("Save As...");
+    saveAsButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            saveAsButtonActionPerformed(evt);
+        }
+    });
+
+    jLabel1.setText("Game Keys:");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -120,7 +203,24 @@ public class MainJFrame extends JFrame {
                 .addGroup(layout.createSequentialGroup()
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jScrollPane2)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(selectGameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(createGameKeysButton)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(saveGameButton)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(saveAsButton)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(deleteGameKeysButton)))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)))))
             .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -131,13 +231,24 @@ public class MainJFrame extends JFrame {
                 .addComponent(midiDevicesLabel)
                 .addComponent(midiDevicesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(selectMidiDeviceButton))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(infoSelectedDeviceLabel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addContainerGap(46, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(2, 2, 2)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(selectGameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(createGameKeysButton)
+                        .addComponent(deleteGameKeysButton)
+                        .addComponent(saveGameButton)
+                        .addComponent(saveAsButton)
+                        .addComponent(jLabel1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1))
+            .addContainerGap(85, Short.MAX_VALUE))
     );
 
     pack();
@@ -160,6 +271,51 @@ public class MainJFrame extends JFrame {
             infoSelectedDeviceLabel.setText("Midi device \"" + midiDevicesComboBox.getSelectedItem() + "\" was don't opened");
         }
     }//GEN-LAST:event_selectMidiDeviceButtonActionPerformed
+
+    private void selectGameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectGameComboBoxActionPerformed
+        if (selectGameComboBox.getSelectedItem() != null) {
+            loadSelectedGameKeys();
+        }
+    }//GEN-LAST:event_selectGameComboBoxActionPerformed
+
+    private void saveGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveGameButtonActionPerformed
+        if (selectGameComboBox.getSelectedItem() != null) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem());
+        }
+    }//GEN-LAST:event_saveGameButtonActionPerformed
+
+    private void createGameKeysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createGameKeysButtonActionPerformed
+        String gameName = JOptionPane.showInputDialog(this, "Input game name (English letters and numbers):");
+        Matcher matcher = pattern.matcher(gameName);
+        if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.createEmptyKeys(gameName);
+            selectGameComboBox.addItem(gameName);
+            selectGameComboBox.setSelectedItem(gameName);
+        } else {
+            JOptionPane.showMessageDialog(this, "Propertie does'n exist. Use English letters and numbers in name");
+        }
+    }//GEN-LAST:event_createGameKeysButtonActionPerformed
+
+    private void deleteGameKeysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteGameKeysButtonActionPerformed
+        GameKeys gameKeys = GameKeys.getInstance();
+        gameKeys.deleteProperty((String) selectGameComboBox.getSelectedItem());
+        selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
+    }//GEN-LAST:event_deleteGameKeysButtonActionPerformed
+
+    private void saveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsButtonActionPerformed
+        String gameName = JOptionPane.showInputDialog(this, "Input new game name (English letters and numbers):");
+        Matcher matcher = pattern.matcher(gameName);
+        if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.saveKeys(gameName);
+            selectGameComboBox.addItem(gameName);
+            selectGameComboBox.setSelectedItem(gameName);
+        } else {
+            JOptionPane.showMessageDialog(this, "Propertie does'n save and exist. Use English letters and numbers in name");
+        }
+    }//GEN-LAST:event_saveAsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,13 +358,20 @@ public class MainJFrame extends JFrame {
     }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton createGameKeysButton;
+    private javax.swing.JButton deleteGameKeysButton;
     private javax.swing.JLabel infoSelectedDeviceLabel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JComboBox midiDevicesComboBox;
     private javax.swing.JLabel midiDevicesLabel;
     private javax.swing.JList midiMessagesList;
     private javax.swing.JPanel pianoKeysPanel;
+    private javax.swing.JButton saveAsButton;
+    private javax.swing.JButton saveGameButton;
+    private javax.swing.JComboBox selectGameComboBox;
     private javax.swing.JButton selectMidiDeviceButton;
     // End of variables declaration//GEN-END:variables
 
@@ -260,8 +423,6 @@ public class MainJFrame extends JFrame {
         }
         
         private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
-            
-            
             switch (statusMidiKey) {
                 case NOTE_ON_MIDI_SIGNAL:
                     eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
@@ -270,12 +431,6 @@ public class MainJFrame extends JFrame {
                     eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
                     break;
             }
-//            if (statusMidiKey == NOTE_ON_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
-//                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
-//            }
-//            if (statusMidiKey == NOTE_OFF_MIDI_SIGNAL && numberMidiKeyEvent == 73) {
-//                eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
-//            }
         }
 
         @Override

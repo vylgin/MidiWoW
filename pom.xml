@@ -4,7 +4,7 @@
 
     <groupId>com.vylgin</groupId>
     <artifactId>MidiWoW</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>MidiWoW</name>
@@ -57,11 +57,11 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>unknown.binary</groupId>
-            <artifactId>AbsoluteLayout</artifactId>
+<!--        <dependency>
+            <groupId>com.vylgin</groupId>
+            <artifactId>MidiWoW</artifactId>
             <version>SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.jdesktop</groupId>
             <artifactId>beansbinding</artifactId>

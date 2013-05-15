@@ -1,6 +1,7 @@
 package com.vylgin.midiwow;
 
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,6 +18,11 @@ import org.junit.Ignore;
 public class GameKeysTest {
     GameKeys gameKeys;
     
+    private static String propertiesNameDir = "properties";
+    private static String dirSeparator = System.getProperty("file.separator");
+    private static String propertiesDirPath = "." + dirSeparator + propertiesNameDir;
+    private static File dirProperties = new File(propertiesDirPath);
+    
     public GameKeysTest() {
     }
     
@@ -31,6 +37,9 @@ public class GameKeysTest {
     @Before
     public void setUp() {
         gameKeys = GameKeys.getInstance();
+        if (!dirProperties.exists()) {
+            dirProperties.mkdir();
+        }
     }
     
     @After
@@ -71,7 +80,8 @@ public class GameKeysTest {
         keyboardKeys1.add(5);
         keyboardKeys1.add(6);
         keyboardKeys1.add(7);
-               
+        
+        gameKeys.createEmptyKeys("WoW");
         gameKeys.setKeyboardKeys(note1, keyboardKeys1);
         gameKeys.saveKeys("WoW");
         
@@ -95,5 +105,12 @@ public class GameKeysTest {
         gameKeys.loadKeys("WoW");
         assertArrayEquals(keyboardKeys1.toArray(), gameKeys.getKeyboardKeys(note1).toArray());
         assertArrayEquals(gameKeys.getKeyboardKeys(note2).toArray(), test.toArray());
+    }
+    
+    @Test
+    public void deleteProperties() {
+        gameKeys.createEmptyKeys("WoW3");
+        gameKeys.loadKeys("WoW3");
+        assertTrue(gameKeys.deleteProperty("WoW3"));
     }
 }

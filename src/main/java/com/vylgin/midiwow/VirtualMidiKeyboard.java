@@ -3,6 +3,7 @@ package com.vylgin.midiwow;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
@@ -121,13 +122,13 @@ public class VirtualMidiKeyboard extends JPanel{
             label.setBackground(Color.RED);
             VirtualMidiKeyboard.this.repaint();
             
-            BindKeys bind = new BindKeys();
-            bind.setSize(300, 300);
+            BindKeys bind = new BindKeys(Integer.valueOf(label.getText()));
+            Point position = getParent().getLocationOnScreen();
+            position = new Point(position.x, position.y + getParent().getHeight() + 20);
+            bind.setLocation(position);
+            bind.setSize(390, 140);
             bind.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             bind.setVisible(true);
-            
-            bind.setNumber(Integer.valueOf(label.getText()));
-            bind.showNumber();
         }
 
         public void mousePressed(MouseEvent e) {

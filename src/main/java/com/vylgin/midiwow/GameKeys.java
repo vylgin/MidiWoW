@@ -23,8 +23,11 @@ public class GameKeys {
     private static final int emptyNote = -1;
     
     private static Properties props = new Properties();
-    private static String dirSeparator = System.getProperty("file.separator");
+    private static final String dirSeparator = System.getProperty("file.separator");
     private static String fileName;
+    private static final String fileExtension = ".properties";
+    private static final String propertiesNameDir = "properties";
+    private static File currentDir = new File(".");
     
     private GameKeys() {
         midiKeys = new ArrayList<ArrayList<Integer>>();
@@ -49,8 +52,6 @@ public class GameKeys {
     public void setKeyboardKeys(int note, ArrayList<Integer> keyboardKeys) {
         midiKeys.remove(note);
         midiKeys.add(note, keyboardKeys);
-        
-//        saveKeys("WoW");
     }
     
     public ArrayList<Integer> getKeyboardKeys(int note) {
@@ -59,9 +60,9 @@ public class GameKeys {
     
     public void createEmptyKeys(String gameName) {
         try {
-            String fName = gameName + ".properties";
-            File currentDir = new File(".");
-            String filePath = currentDir.getCanonicalPath() + dirSeparator + fName;
+            String fName = gameName + fileExtension;
+            String filePath = currentDir.getCanonicalPath() + dirSeparator 
+                    + propertiesNameDir + dirSeparator + fName;
                           
             for (int i = 0; i <= midiKeySize; i++) {
                 props.setProperty(String.valueOf(i), String.valueOf(emptyNote));
@@ -69,7 +70,8 @@ public class GameKeys {
             
             FileOutputStream out = new FileOutputStream(filePath);
             props.store(out, "Created with createEmptyKeys method");
-            
+            out.flush();
+            out.close();
         } catch (IOException ex) {
             Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -78,9 +80,9 @@ public class GameKeys {
     
     public void saveKeys(String gameName) {      
         try {
-            fileName = gameName + ".properties";
-            File currentDir = new File(".");
-            String filePath = currentDir.getCanonicalPath() + dirSeparator + fileName;    
+            fileName = gameName + fileExtension;
+            String filePath = currentDir.getCanonicalPath() + dirSeparator 
+                    + propertiesNameDir + dirSeparator + fileName;    
             
             for (int i = 0; i <= midiKeySize; i++) {
                 ArrayList<Integer> list = midiKeys.get(i);
@@ -94,20 +96,22 @@ public class GameKeys {
             
             FileOutputStream out = new FileOutputStream(filePath);
             props.store(out, "Created with saveKeys method");
+            out.flush();
+            out.close();
         } catch (IOException e) {
-            System.out.println("IO Error!");
+            System.out.println("IO Error in GameKeys class saveKeys method!");
             e.printStackTrace();
         }
     }
     
     public void loadKeys(String gameName) {
         try {
-            fileName = gameName + ".properties";
-            File currentDir = new File(".");
-            String filePath = currentDir.getCanonicalPath() + dirSeparator + fileName;
+            fileName = gameName + fileExtension;
+            String filePath = currentDir.getCanonicalPath() + dirSeparator + propertiesNameDir + dirSeparator + fileName;
                  
             FileInputStream ins = new FileInputStream(filePath);
             props.load(ins);
+            ins.close();
             
             for (int i = 0; i <=midiKeySize; i++) {
                 ArrayList<Integer> list = new ArrayList<Integer>();
@@ -120,5 +124,21 @@ public class GameKeys {
         } catch (IOException ex) {
             Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public boolean deleteProperty(String gameName) {
+        try {
+            String fName = gameName + fileExtension;
+            String filePath = currentDir.getCanonicalPath() + dirSeparator 
+                    + propertiesNameDir + dirSeparator + fName;
+            File file = new File(filePath);
+            file.setWritable(true);
+            if (file.delete()) {
+                return true;   
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 }
