@@ -54,6 +54,10 @@ public class GameKeys {
         midiKeys.add(note, keyboardKeys);
     }
     
+    public int getEmptyNote() {
+        return emptyNote;
+    }
+    
     public ArrayList<Integer> getKeyboardKeys(int note) {
         return midiKeys.get(note);
     }

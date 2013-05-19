@@ -9,6 +9,7 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -395,27 +396,27 @@ public class MainJFrame extends JFrame {
             this.name = name;
         }
 
-        private void eventKeyEmit(int keyEvent, MidiKeyEvent keyPressEvent) {
+        private void eventKeyEmit(ArrayList<Integer> keysEventList, MidiKeyEvent keyPressEvent) {
             switch (keyPressEvent) {
                 case KEY_PRESS_EVENT:
-                    try {
-                        Robot robot = new Robot();
-                        robot.keyPress(keyEvent);
-                        System.out.println("Pressed key: " + KeyEvent.getKeyText(keyEvent));
-                        listModel.addElement("Pressed key: " + KeyEvent.getKeyText(keyEvent));                                                
-                    } catch (AWTException e) {
-//                        e.printStackTrace();
-                    }
+                    System.out.println("Pressed key: " + keysEventList.toString());
+                    listModel.addElement("Pressed key: " + keysEventList.toString());  
+//                    try {
+//                        Robot robot = new Robot();
+//                        robot.keyPress(keyEvent);
+//                        System.out.println("Pressed key: " + KeyEvent.getKeyText(keyEvent));
+//                        listModel.addElement("Pressed key: " + KeyEvent.getKeyText(keyEvent));                                                
+//                    } catch (AWTException e) { }
                     break;
                 case KEY_RELEASE_EVENT:
-                    try {
-                        Robot robot = new Robot();
-                        robot.keyRelease(keyEvent);
-                        System.out.println("Released key: " + KeyEvent.getKeyText(keyEvent));
-                        listModel.addElement("Released key: " + KeyEvent.getKeyText(keyEvent));
-                    } catch (AWTException e) {
-//                        e.printStackTrace();
-                    }
+                    System.out.println("Released key: " + keysEventList.toString());
+                    listModel.addElement("Released key: " + keysEventList.toString());
+//                    try {
+//                        Robot robot = new Robot();
+//                        robot.keyRelease(keyEvent);
+//                        System.out.println("Released key: " + KeyEvent.getKeyText(keyEvent));
+//                        listModel.addElement("Released key: " + KeyEvent.getKeyText(keyEvent));
+//                    } catch (AWTException e) { }
                     break;
                 default:
                     midiMessagesList.repaint();
@@ -423,12 +424,14 @@ public class MainJFrame extends JFrame {
         }
         
         private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            ArrayList<Integer> listKeys = gameKeys.getKeyboardKeys(numberMidiKeyEvent);
             switch (statusMidiKey) {
                 case NOTE_ON_MIDI_SIGNAL:
-                    eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_PRESS_EVENT);
+                    eventKeyEmit(listKeys, MidiKeyEvent.KEY_PRESS_EVENT);
                     break;
                 case NOTE_OFF_MIDI_SIGNAL:
-                    eventKeyEmit(KeyEvent.VK_W, MidiKeyEvent.KEY_RELEASE_EVENT);
+                    eventKeyEmit(listKeys, MidiKeyEvent.KEY_RELEASE_EVENT);
                     break;
             }
         }
@@ -447,7 +450,7 @@ public class MainJFrame extends JFrame {
 
                 System.out.println(midiMessage);
                                
-                if (listModel.getSize() >= 10) {
+                if (listModel.getSize() >= 8) {
                     listModel.remove(0);
                 }
                 

@@ -5,6 +5,8 @@
 package com.vylgin.midiwow;
 
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -15,18 +17,10 @@ import java.util.Scanner;
  */
 public class BindKeys extends javax.swing.JFrame {
     private int number;
+    private static final String emptyKeyText = "Empty";
+    private ArrayList<Integer> newKeysList = new ArrayList<Integer>();
     
-    private void setNumber(int number) {
-        this.number = number;
-    }
-    
-    private void showKeys() {
-        GameKeys gameKeys = GameKeys.getInstance();
-        ArrayList<Integer> list = gameKeys.getKeyboardKeys(number);
-        keysLabel.setText(list.toString());
-    }
-    
-    /**
+     /**
      * Creates new form BindKeys
      */
     public BindKeys(int number) {
@@ -34,6 +28,46 @@ public class BindKeys extends javax.swing.JFrame {
         setNumber(number);
         setTitle("Note: " + String.valueOf(this.number));
         showKeys();
+        
+        newKeysLabel.setFocusable(true);
+        newKeysLabel.setFocusTraversalKeysEnabled(false);
+        
+        currentKeysTextArea.setFocusable(false);
+        newKeysTextArea.setFocusable(false);
+        okButton.setFocusable(false);
+        clearButton.setFocusable(false);
+        emptyNoteButton.setFocusable(false);
+        cancelButton.setFocusable(false);
+        
+        currentKeysLabel.setFocusTraversalKeysEnabled(false);
+        newKeysTextArea.setFocusTraversalKeysEnabled(false);
+        okButton.setFocusTraversalKeysEnabled(false);
+        clearButton.setFocusTraversalKeysEnabled(false);
+        emptyNoteButton.setFocusTraversalKeysEnabled(false);
+        cancelButton.setFocusTraversalKeysEnabled(false);
+    }
+    
+    private void setNumber(int number) {
+        this.number = number;
+    }
+    
+    private void showKeys() {
+        currentKeysTextArea.setText(getNamesOfGameKeys());
+    }
+      
+    private String getNamesOfGameKeys() {
+        GameKeys gameKeys = GameKeys.getInstance();
+        ArrayList<Integer> list = gameKeys.getKeyboardKeys(number);
+        String result = "";
+        for (int i : list) {
+            if (i == gameKeys.getEmptyNote()) {
+                result += emptyKeyText  + "\n";      
+            } else {
+                result += String.valueOf(KeyEvent.getKeyText(i))  + "\n";   
+            }
+        }
+        
+        return result;
     }
 
     /**
@@ -45,14 +79,20 @@ public class BindKeys extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        keysLabel = new javax.swing.JLabel();
-        keysTextField = new javax.swing.JTextField();
+        currentKeysLabel = new javax.swing.JLabel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        emptyNoteButton = new javax.swing.JButton();
+        clearButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        currentKeysTextArea = new javax.swing.JTextArea();
+        newKeysLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        newKeysTextArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        keysLabel.setText("jLabel1");
+        currentKeysLabel.setText("Current Keys:");
 
         okButton.setText("Ok");
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -68,48 +108,87 @@ public class BindKeys extends javax.swing.JFrame {
             }
         });
 
+        emptyNoteButton.setText("Empty Note");
+        emptyNoteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                emptyNoteButtonActionPerformed(evt);
+            }
+        });
+
+        clearButton.setText("Clear");
+        clearButton.setActionCommand("Clear");
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
+
+        currentKeysTextArea.setEditable(false);
+        currentKeysTextArea.setColumns(20);
+        currentKeysTextArea.setRows(7);
+        jScrollPane1.setViewportView(currentKeysTextArea);
+
+        newKeysLabel.setText("New Keys:");
+        newKeysLabel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                newKeysLabelKeyReleased(evt);
+            }
+        });
+
+        newKeysTextArea.setEditable(false);
+        newKeysTextArea.setColumns(20);
+        newKeysTextArea.setRows(7);
+        jScrollPane2.setViewportView(newKeysTextArea);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(newKeysLabel)
+                    .addComponent(currentKeysLabel)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(keysTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(keysLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(356, 356, 356))))
+                        .addComponent(clearButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(emptyNoteButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelButton))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addGap(0, 248, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(keysLabel)
+                .addComponent(currentKeysLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(newKeysLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(keysTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(okButton)
-                    .addComponent(cancelButton))
-                .addContainerGap(234, Short.MAX_VALUE))
+                    .addComponent(cancelButton)
+                    .addComponent(emptyNoteButton)
+                    .addComponent(clearButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        Scanner scaner = new Scanner(keysTextField.getText());
-        while (scaner.hasNextInt()) {
-            list.add(scaner.nextInt());
+        if (!newKeysList.isEmpty()) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.setKeyboardKeys(number, newKeysList);
         }
-        GameKeys gameKeys = GameKeys.getInstance();
-        gameKeys.setKeyboardKeys(number, list);
         
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
@@ -120,10 +199,42 @@ public class BindKeys extends javax.swing.JFrame {
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
+    private void emptyNoteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emptyNoteButtonActionPerformed
+        newKeysTextArea.setText("");
+        
+        GameKeys gameKeys = GameKeys.getInstance();
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        list.add(gameKeys.getEmptyNote());
+        gameKeys.setKeyboardKeys(number, list);
+        
+        WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+    }//GEN-LAST:event_emptyNoteButtonActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        newKeysTextArea.setText("");
+        newKeysList = new ArrayList<Integer>();
+    }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void newKeysLabelKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_newKeysLabelKeyReleased
+        int keyCode = evt.getKeyCode();
+        String keyName = KeyEvent.getKeyText(keyCode);
+        newKeysTextArea.append(keyName + "\n");
+
+        newKeysList.add(keyCode);
+    }//GEN-LAST:event_newKeysLabelKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JLabel keysLabel;
-    private javax.swing.JTextField keysTextField;
+    private javax.swing.JButton clearButton;
+    private javax.swing.JLabel currentKeysLabel;
+    private javax.swing.JTextArea currentKeysTextArea;
+    private javax.swing.JButton emptyNoteButton;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel newKeysLabel;
+    private javax.swing.JTextArea newKeysTextArea;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
+
 }

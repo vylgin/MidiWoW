@@ -66,7 +66,7 @@ public class VirtualMidiKeyboard extends JPanel{
     }
       
     private void createKeys() {        
-        Vector<Integer> wKeys = new Vector<Integer>();
+        ArrayList<Integer> wKeys = new ArrayList<Integer>();
         wKeys.add(0); 
         wKeys.add(2);
         wKeys.add(4);
@@ -75,7 +75,7 @@ public class VirtualMidiKeyboard extends JPanel{
         wKeys.add(9);
         wKeys.add(11);
         
-        Vector<Integer> bKeys = new Vector<Integer>();
+        ArrayList<Integer> bKeys = new ArrayList<Integer>();
         bKeys.add(1);
         bKeys.add(3);
         bKeys.add(6);
@@ -83,7 +83,7 @@ public class VirtualMidiKeyboard extends JPanel{
         bKeys.add(10);
         
         for (int i = 0; i < 75; i++) {
-            Integer firstElement = wKeys.firstElement();
+            Integer firstElement = wKeys.get(0);
             insertWhiteKey(i, String.valueOf(firstElement));
             wKeys.add(firstElement + 12);
             wKeys.remove(0);
@@ -94,7 +94,7 @@ public class VirtualMidiKeyboard extends JPanel{
             if (j == 2 || j == 6) {
                 continue;
             }
-            Integer firstElement = bKeys.firstElement();
+            Integer firstElement = bKeys.get(0);
             insertBlackKey(i, String.valueOf(firstElement));
             bKeys.add(firstElement + 12);
             bKeys.remove(0);
@@ -126,7 +126,6 @@ public class VirtualMidiKeyboard extends JPanel{
             Point position = getParent().getLocationOnScreen();
             position = new Point(position.x, position.y + getParent().getHeight() + 20);
             bind.setLocation(position);
-            bind.setSize(390, 140);
             bind.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             bind.setVisible(true);
         }
