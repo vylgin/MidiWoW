@@ -2,7 +2,7 @@
 
 **Current Status: Pre-alpha**
 
-**Current Version: 0.6**
+**Current Version: 0.7**
 
 This program for play in PC Games on midi keybord.
 
