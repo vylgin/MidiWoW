@@ -1,6 +1,6 @@
 # MidiWoW
 
-**Current Status: Pre-alpha**
+**Current Status: Release candidate**
 
 **Current Version: 0.9**
 
