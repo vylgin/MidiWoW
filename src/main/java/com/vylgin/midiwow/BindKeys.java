@@ -17,15 +17,16 @@ import java.util.Scanner;
  */
 public class BindKeys extends javax.swing.JFrame {
     private int number;
-    private static final String emptyKeyText = "Empty";
     private ArrayList<Integer> newKeysList = new ArrayList<Integer>();
+    private VirtualMidiKeyboard virtualMidiKeyboard;
     
      /**
      * Creates new form BindKeys
      */
-    public BindKeys(int number) {
+    public BindKeys(int number, VirtualMidiKeyboard vmk) {
         initComponents();
         setNumber(number);
+        virtualMidiKeyboard = vmk;
         setTitle("Note: " + String.valueOf(this.number));
         showKeys();
         
@@ -54,19 +55,24 @@ public class BindKeys extends javax.swing.JFrame {
     private void showKeys() {
         currentKeysTextArea.setText(getNamesOfGameKeys());
     }
-      
+       
     private String getNamesOfGameKeys() {
         GameKeys gameKeys = GameKeys.getInstance();
         ArrayList<Integer> list = gameKeys.getKeyboardKeys(number);
         String result = "";
-        for (int i : list) {
-            if (i == gameKeys.getEmptyNote()) {
-                result += emptyKeyText  + "\n";      
+
+        for (int j = 0; j < list.size(); j++) {
+            if (j == list.size() - 1 || list.size() == 1) {
+                result += (list.get(j) == GameKeys.getEmptyNote())
+                        ? GameKeys.emptyKeyText
+                        : String.valueOf(KeyEvent.getKeyText(list.get(j)));
             } else {
-                result += String.valueOf(KeyEvent.getKeyText(i))  + "\n";   
+                result += (list.get(j) == GameKeys.getEmptyNote())
+                        ? GameKeys.emptyKeyText + "\n"
+                        : String.valueOf(KeyEvent.getKeyText(list.get(j))) + "\n";
             }
         }
-        
+
         return result;
     }
 
@@ -116,7 +122,6 @@ public class BindKeys extends javax.swing.JFrame {
         });
 
         clearButton.setText("Clear");
-        clearButton.setActionCommand("Clear");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearButtonActionPerformed(evt);
@@ -159,7 +164,7 @@ public class BindKeys extends javax.swing.JFrame {
                         .addComponent(cancelButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
                     .addComponent(jScrollPane2))
-                .addGap(0, 248, Short.MAX_VALUE))
+                .addGap(0, 10, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,6 +193,7 @@ public class BindKeys extends javax.swing.JFrame {
         if (!newKeysList.isEmpty()) {
             GameKeys gameKeys = GameKeys.getInstance();
             gameKeys.setKeyboardKeys(number, newKeysList);
+            virtualMidiKeyboard.backlightNotEmptyKeys();
         }
         
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
@@ -207,6 +213,8 @@ public class BindKeys extends javax.swing.JFrame {
         list.add(gameKeys.getEmptyNote());
         gameKeys.setKeyboardKeys(number, list);
         
+        virtualMidiKeyboard.backlightNotEmptyKeys();
+        
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
     }//GEN-LAST:event_emptyNoteButtonActionPerformed
@@ -222,6 +230,7 @@ public class BindKeys extends javax.swing.JFrame {
         newKeysTextArea.append(keyName + "\n");
 
         newKeysList.add(keyCode);
+        
     }//GEN-LAST:event_newKeysLabelKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

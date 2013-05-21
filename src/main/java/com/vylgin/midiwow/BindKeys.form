@@ -40,7 +40,7 @@
                   <Component id="jScrollPane1" alignment="0" pref="299" max="32767" attributes="0"/>
                   <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace min="0" pref="248" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="10" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -100,7 +100,6 @@
     <Component class="javax.swing.JButton" name="clearButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Clear"/>
-        <Property name="actionCommand" type="java.lang.String" value="Clear"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearButtonActionPerformed"/>

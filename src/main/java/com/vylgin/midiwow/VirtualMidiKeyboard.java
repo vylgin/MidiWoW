@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class VirtualMidiKeyboard extends JPanel{
     private JLabel[] pianoKeys = new JLabel[128];
     private final String whiteKeysName = "white";
     private final String blackKeysName = "black";
+    public Color backgroundKeyPressed = Color.BLUE;
+    public Color backgroindKeysBeforePressed[] = new Color[128];
 
     public VirtualMidiKeyboard() {
         createKeys();
@@ -30,10 +33,12 @@ public class VirtualMidiKeyboard extends JPanel{
         for (JLabel label : pianoKeys) {
             label.addMouseListener(new keysMouseListener());
         }
+        
+        setToolTipKeys();
     }    
     
     private void insertWhiteKey(int index, String name) {
-//        JLabel key = new JLabel("<html>" + String.valueOf(i) + "<br>" + "D" + "</html>", SwingConstants.CENTER);
+//        JLabel key = new JLabel("<html>" + String.valueOf(keyName) + "<br>" + "D" + "</html>", SwingConstants.CENTER);
         JLabel key = new JLabel(name, SwingConstants.CENTER);
         key.setName(whiteKeysName);
         key.setToolTipText(name);
@@ -102,6 +107,7 @@ public class VirtualMidiKeyboard extends JPanel{
     }
     
     public void backlightOnKey(int key) {
+        backgroindKeysBeforePressed[key] = pianoKeys[key].getBackground();
         pianoKeys[key].setBackground(Color.GREEN);
         repaint();
     }
@@ -112,7 +118,61 @@ public class VirtualMidiKeyboard extends JPanel{
         } else if (pianoKeys[key].getName().equals(blackKeysName)) {
             pianoKeys[key].setBackground(Color.BLACK);
         }
+
+        if (backgroindKeysBeforePressed[key] == backgroundKeyPressed) {
+            pianoKeys[key].setBackground(backgroundKeyPressed);
+            backgroindKeysBeforePressed[key] = pianoKeys[key].getBackground();
+        } 
+        
         repaint();
+    }
+    
+    public void backlightNotEmptyKeys() {
+//        clearBacklight();
+        GameKeys gameKeys = GameKeys.getInstance();
+        
+        for (int i = 0; i < pianoKeys.length; i++) {
+            ArrayList<Integer> list = gameKeys.getKeyboardKeys(i);
+            if (!list.get(0).equals(gameKeys.getEmptyNote())) {
+                pianoKeys[i].setBackground(backgroundKeyPressed);   
+            }
+        }
+        repaint();
+        setToolTipKeys();
+    }
+    
+    public void clearBacklight() {
+        for (int i = 0; i < pianoKeys.length; i++) {
+            if (pianoKeys[i].getName().equals(whiteKeysName)) {
+                pianoKeys[i].setBackground(Color.WHITE);
+            } else if (pianoKeys[i].getName().equals(blackKeysName)) {
+                pianoKeys[i].setBackground(Color.BLACK);
+            }
+        }
+        repaint();
+    }
+
+    private void setToolTipKeys() {
+        GameKeys gameKeys = GameKeys.getInstance();
+        
+        for (int i = 0; i < pianoKeys.length; i++) {
+            ArrayList<Integer> list = gameKeys.getKeyboardKeys(i);
+            String result = "";
+
+            for (int j = 0; j < list.size(); j++) {
+                if (j == list.size() - 1 || list.size() == 1) {
+                    result += (list.get(j) == GameKeys.getEmptyNote())
+                            ? GameKeys.emptyKeyText
+                            : String.valueOf(KeyEvent.getKeyText(list.get(j)));
+                } else {
+                    result += (list.get(j) == GameKeys.getEmptyNote())
+                            ? GameKeys.emptyKeyText  + " + "
+                            : String.valueOf(KeyEvent.getKeyText(list.get(j))) + " + ";
+                }
+            }
+            
+            pianoKeys[i].setToolTipText(result);
+        }
     }
     
     public class keysMouseListener implements MouseListener{
@@ -122,7 +182,7 @@ public class VirtualMidiKeyboard extends JPanel{
             label.setBackground(Color.RED);
             VirtualMidiKeyboard.this.repaint();
             
-            BindKeys bind = new BindKeys(Integer.valueOf(label.getText()));
+            BindKeys bind = new BindKeys(Integer.valueOf(label.getText()), VirtualMidiKeyboard.this);
             Point position = getParent().getLocationOnScreen();
             position = new Point(position.x, position.y + getParent().getHeight() + 20);
             bind.setLocation(position);
@@ -150,6 +210,5 @@ public class VirtualMidiKeyboard extends JPanel{
             label.setBackground(keyColor);
             VirtualMidiKeyboard.this.repaint();
         }
-        
     }
 }

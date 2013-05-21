@@ -83,6 +83,12 @@ public class MainJFrame extends JFrame {
         gameKeys.loadKeys((String) selectGameComboBox.getSelectedItem());
     }
 
+    private void setBacklightNotEmptyKeys() {
+        VirtualMidiKeyboard vmk = (VirtualMidiKeyboard) pianoKeysPanel;
+        vmk.clearBacklight();
+        vmk.backlightNotEmptyKeys();
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -267,7 +273,6 @@ public class MainJFrame extends JFrame {
                 infoSelectedDeviceLabel.setText("Midi device \"" + device.getDeviceInfo() + "\" was opened");
             }
         } catch (MidiUnavailableException e1) {
-//                    e1.printStackTrace();
             System.out.println("Don't use " + midiDevicesComboBox.getSelectedItem());
             infoSelectedDeviceLabel.setText("Midi device \"" + midiDevicesComboBox.getSelectedItem() + "\" was don't opened");
         }
@@ -276,6 +281,7 @@ public class MainJFrame extends JFrame {
     private void selectGameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectGameComboBoxActionPerformed
         if (selectGameComboBox.getSelectedItem() != null) {
             loadSelectedGameKeys();
+            setBacklightNotEmptyKeys();
         }
     }//GEN-LAST:event_selectGameComboBoxActionPerformed
 
@@ -283,6 +289,7 @@ public class MainJFrame extends JFrame {
         if (selectGameComboBox.getSelectedItem() != null) {
             GameKeys gameKeys = GameKeys.getInstance();
             gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem());
+//            setBacklightNotEmptyKeys();
         }
     }//GEN-LAST:event_saveGameButtonActionPerformed
 
@@ -294,6 +301,7 @@ public class MainJFrame extends JFrame {
             gameKeys.createEmptyKeys(gameName);
             selectGameComboBox.addItem(gameName);
             selectGameComboBox.setSelectedItem(gameName);
+            setBacklightNotEmptyKeys();
         } else {
             JOptionPane.showMessageDialog(this, "Propertie does'n exist. Use English letters and numbers in name");
         }
@@ -303,6 +311,7 @@ public class MainJFrame extends JFrame {
         GameKeys gameKeys = GameKeys.getInstance();
         gameKeys.deleteProperty((String) selectGameComboBox.getSelectedItem());
         selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
+        setBacklightNotEmptyKeys();
     }//GEN-LAST:event_deleteGameKeysButtonActionPerformed
 
     private void saveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsButtonActionPerformed
@@ -313,6 +322,7 @@ public class MainJFrame extends JFrame {
             gameKeys.saveKeys(gameName);
             selectGameComboBox.addItem(gameName);
             selectGameComboBox.setSelectedItem(gameName);
+            setBacklightNotEmptyKeys();
         } else {
             JOptionPane.showMessageDialog(this, "Propertie does'n save and exist. Use English letters and numbers in name");
         }
@@ -399,24 +409,28 @@ public class MainJFrame extends JFrame {
         private void eventKeyEmit(ArrayList<Integer> keysEventList, MidiKeyEvent keyPressEvent) {
             switch (keyPressEvent) {
                 case KEY_PRESS_EVENT:
-                    System.out.println("Pressed key: " + keysEventList.toString());
-                    listModel.addElement("Pressed key: " + keysEventList.toString());  
-//                    try {
-//                        Robot robot = new Robot();
-//                        robot.keyPress(keyEvent);
-//                        System.out.println("Pressed key: " + KeyEvent.getKeyText(keyEvent));
-//                        listModel.addElement("Pressed key: " + KeyEvent.getKeyText(keyEvent));                                                
-//                    } catch (AWTException e) { }
+                    try {
+                        Robot robot = new Robot();
+                        for (int key : keysEventList) {
+                            if (key != GameKeys.getEmptyNote()) {
+                                robot.keyPress(key);
+                            }
+                        }
+                        System.out.println("Pressed key: " + keysEventList.toString());
+                        listModel.addElement("Pressed key: " + keysEventList.toString());
+                    } catch (AWTException e) { }
                     break;
                 case KEY_RELEASE_EVENT:
-                    System.out.println("Released key: " + keysEventList.toString());
-                    listModel.addElement("Released key: " + keysEventList.toString());
-//                    try {
-//                        Robot robot = new Robot();
-//                        robot.keyRelease(keyEvent);
-//                        System.out.println("Released key: " + KeyEvent.getKeyText(keyEvent));
-//                        listModel.addElement("Released key: " + KeyEvent.getKeyText(keyEvent));
-//                    } catch (AWTException e) { }
+                    try {
+                        Robot robot = new Robot();
+                        for (int key : keysEventList) {
+                            if (key != GameKeys.getEmptyNote()) {
+                                robot.keyRelease(key);   
+                            }
+                        }
+                        System.out.println("Released key: " + keysEventList.toString());
+                        listModel.addElement("Released key: " + keysEventList.toString());
+                    } catch (AWTException e) { }
                     break;
                 default:
                     midiMessagesList.repaint();
@@ -454,14 +468,15 @@ public class MainJFrame extends JFrame {
                     listModel.remove(0);
                 }
                 
+                VirtualMidiKeyboard vmk = (VirtualMidiKeyboard) pianoKeysPanel;
+                
                 if (event.getStatus() == NOTE_ON_MIDI_SIGNAL) {
-                    VirtualMidiKeyboard vmk = (VirtualMidiKeyboard) pianoKeysPanel;
                     vmk.backlightOnKey(event.getData1());
                 }
 
                 if (event.getStatus() == NOTE_OFF_MIDI_SIGNAL) {
-                    VirtualMidiKeyboard vmk = (VirtualMidiKeyboard) pianoKeysPanel;
                     vmk.backlightOffKey(event.getData1());
+//                    vmk.backlightNotEmptyKeys();
                 }
                 
                 bindKeys(event.getStatus(), event.getData1());

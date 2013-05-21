@@ -17,6 +17,7 @@ import java.util.logging.Logger;
  * @author vylgin
  */
 public class GameKeys {
+    public static final String emptyKeyText = "Empty";
     private volatile static GameKeys gameKeys;
     private ArrayList<ArrayList<Integer>> midiKeys;
     private static final int midiKeySize = 127;
@@ -54,7 +55,7 @@ public class GameKeys {
         midiKeys.add(note, keyboardKeys);
     }
     
-    public int getEmptyNote() {
+    public static int getEmptyNote() {
         return emptyNote;
     }
     
