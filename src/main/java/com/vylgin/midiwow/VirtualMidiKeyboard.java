@@ -23,7 +23,8 @@ public class VirtualMidiKeyboard extends JPanel{
     private JLabel[] pianoKeys = new JLabel[128];
     private final String whiteKeysName = "white";
     private final String blackKeysName = "black";
-    public Color backgroundKeyPressed = new Color(234, 238, 238);
+    public Color backgroundWhiteKeyPressed = new Color(193, 205, 205);
+    public Color backgroundBlackKeyPressed = new Color(108, 123, 139);
     public Color backgroindKeysBeforePressed[] = new Color[128];
 
     public VirtualMidiKeyboard() {
@@ -60,7 +61,7 @@ public class VirtualMidiKeyboard extends JPanel{
         key.setToolTipText(name);
         key.setVerticalAlignment(SwingConstants.BOTTOM);
         key.setOpaque(true);
-        key.setFont(new Font("Serif", Font.PLAIN, 10));
+        key.setFont(new Font("Serif", Font.PLAIN, 8));
         key.setBackground(Color.BLACK);
         key.setForeground(Color.WHITE);
         key.setLocation(index * 20 + 12, 0);
@@ -121,8 +122,13 @@ public class VirtualMidiKeyboard extends JPanel{
             pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
         }
 
-        if (backgroindKeysBeforePressed[key] == backgroundKeyPressed) {
-            pianoKeys[key].setBackground(backgroundKeyPressed);
+        if (backgroindKeysBeforePressed[key] == backgroundWhiteKeyPressed 
+                || backgroindKeysBeforePressed[key] == backgroundBlackKeyPressed) {
+            if (pianoKeys[key].getName().equals(whiteKeysName)) {
+                pianoKeys[key].setBackground(backgroundWhiteKeyPressed);
+            } else if (pianoKeys[key].getName().equals(blackKeysName)) {
+                pianoKeys[key].setBackground(backgroundBlackKeyPressed);
+            }
             backgroindKeysBeforePressed[key] = pianoKeys[key].getBackground();
             pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
         } 
@@ -137,7 +143,11 @@ public class VirtualMidiKeyboard extends JPanel{
         for (int i = 0; i < pianoKeys.length; i++) {
             ArrayList<Integer> list = gameKeys.getKeyboardKeys(i);
             if (!list.get(0).equals(gameKeys.getEmptyNote())) {
-                pianoKeys[i].setBackground(backgroundKeyPressed);
+                if (pianoKeys[i].getName().equals(whiteKeysName)) {
+                    pianoKeys[i].setBackground(backgroundWhiteKeyPressed);
+                } else if (pianoKeys[i].getName().equals(blackKeysName)) {
+                    pianoKeys[i].setBackground(backgroundBlackKeyPressed);
+                }
                 pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
             }
         }
