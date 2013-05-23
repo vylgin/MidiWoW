@@ -414,10 +414,9 @@ public class MainJFrame extends JFrame {
                         for (int key : keysEventList) {
                             if (key != GameKeys.getEmptyNote()) {
                                 robot.keyPress(key);
+                                listModel.addElement("Pressed key: " + KeyEvent.getKeyText(key));
                             }
-                        }
-                        System.out.println("Pressed key: " + keysEventList.toString());
-                        listModel.addElement("Pressed key: " + keysEventList.toString());
+                        }                        
                     } catch (AWTException e) { }
                     break;
                 case KEY_RELEASE_EVENT:
@@ -425,11 +424,10 @@ public class MainJFrame extends JFrame {
                         Robot robot = new Robot();
                         for (int key : keysEventList) {
                             if (key != GameKeys.getEmptyNote()) {
-                                robot.keyRelease(key);   
+                                robot.keyRelease(key); 
+                                listModel.addElement("Released key: " + KeyEvent.getKeyText(key));
                             }
-                        }
-                        System.out.println("Released key: " + keysEventList.toString());
-                        listModel.addElement("Released key: " + keysEventList.toString());
+                        }                        
                     } catch (AWTException e) { }
                     break;
                 default:

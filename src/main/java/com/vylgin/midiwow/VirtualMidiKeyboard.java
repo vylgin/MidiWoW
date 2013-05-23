@@ -23,7 +23,7 @@ public class VirtualMidiKeyboard extends JPanel{
     private JLabel[] pianoKeys = new JLabel[128];
     private final String whiteKeysName = "white";
     private final String blackKeysName = "black";
-    public Color backgroundKeyPressed = Color.BLUE;
+    public Color backgroundKeyPressed = new Color(234, 238, 238);
     public Color backgroindKeysBeforePressed[] = new Color[128];
 
     public VirtualMidiKeyboard() {
@@ -115,13 +115,16 @@ public class VirtualMidiKeyboard extends JPanel{
     public void backlightOffKey(int key) {
         if (pianoKeys[key].getName().equals(whiteKeysName)) {
             pianoKeys[key].setBackground(Color.WHITE);
+            pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
         } else if (pianoKeys[key].getName().equals(blackKeysName)) {
             pianoKeys[key].setBackground(Color.BLACK);
+            pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
         }
 
         if (backgroindKeysBeforePressed[key] == backgroundKeyPressed) {
             pianoKeys[key].setBackground(backgroundKeyPressed);
             backgroindKeysBeforePressed[key] = pianoKeys[key].getBackground();
+            pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
         } 
         
         repaint();
@@ -134,7 +137,8 @@ public class VirtualMidiKeyboard extends JPanel{
         for (int i = 0; i < pianoKeys.length; i++) {
             ArrayList<Integer> list = gameKeys.getKeyboardKeys(i);
             if (!list.get(0).equals(gameKeys.getEmptyNote())) {
-                pianoKeys[i].setBackground(backgroundKeyPressed);   
+                pianoKeys[i].setBackground(backgroundKeyPressed);
+                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
             }
         }
         repaint();
@@ -145,8 +149,10 @@ public class VirtualMidiKeyboard extends JPanel{
         for (int i = 0; i < pianoKeys.length; i++) {
             if (pianoKeys[i].getName().equals(whiteKeysName)) {
                 pianoKeys[i].setBackground(Color.WHITE);
+                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
             } else if (pianoKeys[i].getName().equals(blackKeysName)) {
                 pianoKeys[i].setBackground(Color.BLACK);
+                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
             }
         }
         repaint();
