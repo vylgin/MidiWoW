@@ -19,19 +19,23 @@ public class MidiWoW {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
         MidiWoW midiWoW = new MidiWoW();
         midiWoW.go();
     }
 
+    /**
+     * Method return connected midi devices to PC
+     * @return vector of connected midi devices
+     */
     public Vector<MidiDevice.Info> getMidiNamesDevicesInfo() {
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
         Vector<MidiDevice.Info> namesMidiDevices = new Vector<MidiDevice.Info>();
@@ -40,7 +44,7 @@ public class MidiWoW {
     }
     
     private void go() {
-        MainJFrame frame = new MainJFrame();
+        MainWindow frame = new MainWindow();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 350);
         frame.setVisible(true);
