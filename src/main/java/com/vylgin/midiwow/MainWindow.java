@@ -8,11 +8,8 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sound.midi.MidiDevice;
@@ -31,8 +28,7 @@ import javax.swing.JOptionPane;
  * The main frame at which there are widgets
  * @author vylgin
  */
-public class MainJFrame extends JFrame {
-    
+public class MainWindow extends JFrame {
     private final DefaultListModel listModel = new DefaultListModel();
     private DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>();
     private static final Pattern pattern = Pattern.compile("[a-zA-Z\\d\\s]+");
@@ -41,20 +37,25 @@ public class MainJFrame extends JFrame {
     private static final String dirSeparator = System.getProperty("file.separator");
     private static final String propertiesDirPath = "." + dirSeparator + propertiesNameDir;
     private static final File dirProperties = new File(propertiesDirPath);
-       
-    public MainJFrame getFrame() {
+    
+    private static enum MidiKeyEvent {
+        KEY_PRESS_EVENT,
+        KEY_RELEASE_EVENT
+    }
+        
+    /**
+     * 
+     * @return this
+     */
+    public MainWindow getFrame() {
         return this;
     }
     
     /**
-     * Creates new form MainJFrame
+     * Creates new form MainWindow
      */
-    public MainJFrame() {
-        if (dirProperties.exists()) {
-            for (String fileName : dirProperties.list()) {
-                System.out.println(fileName);
-            }
-        } else {
+    public MainWindow() {
+        if (!dirProperties.exists()) {
             dirProperties.mkdir();
             String defaultGame = "default";
             GameKeys gameKeys = GameKeys.getInstance();
@@ -65,6 +66,15 @@ public class MainJFrame extends JFrame {
         initComponents();
         selectGameComboBox.setModel(comboBoxModel);
         initializeGameComboBox();
+    }
+    
+    /**
+     * Set vector of midi devices to devices combo box.
+     * @param midiDevices vector of midi devices.
+     */
+    public void setMidiDeviceNames(Vector<MidiDevice.Info> midiDevices) {
+        midiDevicesComboBox.setModel(new DefaultComboBoxModel<MidiDevice.Info>(midiDevices));
+        midiMessagesList.setModel(listModel);
     }
     
     private void initializeGameComboBox() {
@@ -265,7 +275,7 @@ public class MainJFrame extends JFrame {
         try {
             MidiDevice device = MidiSystem.getMidiDevice((MidiDevice.Info) midiDevicesComboBox.getSelectedItem());
             Transmitter trans = device.getTransmitter();
-            trans.setReceiver(new MidiInputReceiver(device.getDeviceInfo().toString()));
+            trans.setReceiver(new MidiInputReceiver());
 
             if (!device.isOpen()) {
                 device.open();
@@ -327,46 +337,6 @@ public class MainJFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Propertie does'n save and exist. Use English letters and numbers in name");
         }
     }//GEN-LAST:event_saveAsButtonActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainJFrame().setVisible(true);
-            }
-        });
-    }
-    
-    public void setMidiDeviceNames(Vector<MidiDevice.Info> midiDevices) {
-        midiDevicesComboBox.setModel(new DefaultComboBoxModel<MidiDevice.Info>(midiDevices));
-        midiMessagesList.setModel(listModel);
-    }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton createGameKeysButton;
@@ -386,11 +356,6 @@ public class MainJFrame extends JFrame {
     private javax.swing.JButton selectMidiDeviceButton;
     // End of variables declaration//GEN-END:variables
 
-    private static enum MidiKeyEvent {
-        KEY_PRESS_EVENT,
-        KEY_RELEASE_EVENT
-    }
-
     /**
     * The handler of the received messages
     * @author vylgin
@@ -400,11 +365,6 @@ public class MainJFrame extends JFrame {
         private static final int SYSTEM_MIDI_SIGNAL = 248;
         private static final int NOTE_ON_MIDI_SIGNAL = 144;
         private static final int NOTE_OFF_MIDI_SIGNAL = 128;
-        private String name;
-
-        public MidiInputReceiver(String name) {
-            this.name = name;
-        }
 
         private void eventKeyEmit(ArrayList<Integer> keysEventList, MidiKeyEvent keyPressEvent) {
             switch (keyPressEvent) {
@@ -459,8 +419,6 @@ public class MainJFrame extends JFrame {
                         + ", data2 = " + event.getData2()
                         + ", status = " + event.getStatus()
                         + ", length = " + event.getLength();
-
-                System.out.println(midiMessage);
                                
                 if (listModel.getSize() >= 8) {
                     listModel.remove(0);
@@ -474,7 +432,6 @@ public class MainJFrame extends JFrame {
 
                 if (event.getStatus() == NOTE_OFF_MIDI_SIGNAL) {
                     vmk.backlightOffKey(event.getData1());
-//                    vmk.backlightNotEmptyKeys();
                 }
                 
                 bindKeys(event.getStatus(), event.getData1());

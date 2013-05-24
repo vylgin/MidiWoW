@@ -6,23 +6,21 @@ package com.vylgin.midiwow;
 
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
- *
+ * Class for binding midi keyboard keys with PC keyboard keys
  * @author vylgin
  */
 public class BindKeys extends javax.swing.JFrame {
     private int number;
     private ArrayList<Integer> newKeysList = new ArrayList<Integer>();
     private VirtualMidiKeyboard virtualMidiKeyboard;
-    
-     /**
-     * Creates new form BindKeys
-     */
+
+    /**
+    * Creates new form BindKeys
+    */
     public BindKeys(int number, VirtualMidiKeyboard vmk) {
         initComponents();
         setNumber(number);
