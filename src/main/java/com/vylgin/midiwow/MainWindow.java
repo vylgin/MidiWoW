@@ -6,7 +6,9 @@ package com.vylgin.midiwow;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -31,7 +33,7 @@ import javax.swing.JOptionPane;
 public class MainWindow extends JFrame {
     private final DefaultListModel listModel = new DefaultListModel();
     private DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>();
-    private static final Pattern pattern = Pattern.compile("[a-zA-Z\\d\\s]+");
+    private static final Pattern patternGameName = Pattern.compile("[a-zA-Z\\d\\s]+");
     private static final String propertiesNameDir = "properties";
     private static final String fileExtension = ".properties";
     private static final String dirSeparator = System.getProperty("file.separator");
@@ -99,6 +101,48 @@ public class MainWindow extends JFrame {
         vmk.backlightNotEmptyKeys();
     }
     
+    private void createGameKeys() {
+        String gameName = JOptionPane.showInputDialog(this, "Input game name (English letters and numbers):");
+        Matcher matcher = patternGameName.matcher(gameName);
+        if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.createEmptyKeys(gameName);
+            selectGameComboBox.addItem(gameName);
+            selectGameComboBox.setSelectedItem(gameName);
+            setBacklightNotEmptyKeys();
+        } else {
+            JOptionPane.showMessageDialog(this, "Propertie does'n exist. Use English letters and numbers in name");
+        }
+    }
+    
+    private void saveGameKeys() {
+        if (selectGameComboBox.getSelectedItem() != null) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem());
+        }
+    }
+    
+    private void saveAsGameKeys() {
+        String gameName = JOptionPane.showInputDialog(this, "Input new game name (English letters and numbers):");
+        Matcher matcher = patternGameName.matcher(gameName);
+        if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            gameKeys.saveKeys(gameName);
+            selectGameComboBox.addItem(gameName);
+            selectGameComboBox.setSelectedItem(gameName);
+            setBacklightNotEmptyKeys();
+        } else {
+            JOptionPane.showMessageDialog(this, "Propertie does'n save and exist. Use English letters and numbers in name");
+        }
+    }
+    
+    private void deleteGameKeys() {
+        GameKeys gameKeys = GameKeys.getInstance();
+        gameKeys.deleteProperty((String) selectGameComboBox.getSelectedItem());
+        selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
+        setBacklightNotEmptyKeys();
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -117,12 +161,24 @@ public class MainWindow extends JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         pianoKeysPanel = new VirtualMidiKeyboard();
         selectGameComboBox = new javax.swing.JComboBox();
-        saveGameButton = new javax.swing.JButton();
+        saveGameKeysButton = new javax.swing.JButton();
         createGameKeysButton = new javax.swing.JButton();
         deleteGameKeysButton = new javax.swing.JButton();
         saveAsButton = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
+        menuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        exitMenuItem = new javax.swing.JMenuItem();
+        gameKeysMenu = new javax.swing.JMenu();
+        createMenuItem = new javax.swing.JMenuItem();
+        saveMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
+        deleteMenuItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        documentationMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        aboutMidiWoWMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MidiWoW");
@@ -173,10 +229,10 @@ public class MainWindow extends JFrame {
         }
     });
 
-    saveGameButton.setText("Save");
-    saveGameButton.addActionListener(new java.awt.event.ActionListener() {
+    saveGameKeysButton.setText("Save");
+    saveGameKeysButton.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            saveGameButtonActionPerformed(evt);
+            saveGameKeysButtonActionPerformed(evt);
         }
     });
 
@@ -202,6 +258,78 @@ public class MainWindow extends JFrame {
     });
 
     jLabel1.setText("Game Keys:");
+
+    fileMenu.setText("File");
+
+    exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+    exitMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross.png"))); // NOI18N
+    exitMenuItem.setText("Exit");
+    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            exitMenuItemActionPerformed(evt);
+        }
+    });
+    fileMenu.add(exitMenuItem);
+
+    menuBar.add(fileMenu);
+
+    gameKeysMenu.setText("Game Keys");
+
+    createMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+    createMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add.png"))); // NOI18N
+    createMenuItem.setText("Create");
+    createMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            createMenuItemActionPerformed(evt);
+        }
+    });
+    gameKeysMenu.add(createMenuItem);
+
+    saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+    saveMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_save.png"))); // NOI18N
+    saveMenuItem.setText("Save");
+    saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            saveMenuItemActionPerformed(evt);
+        }
+    });
+    gameKeysMenu.add(saveMenuItem);
+
+    saveAsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+    saveAsMenuItem.setText("Save As...");
+    saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            saveAsMenuItemActionPerformed(evt);
+        }
+    });
+    gameKeysMenu.add(saveAsMenuItem);
+
+    deleteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+    deleteMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/delete.png"))); // NOI18N
+    deleteMenuItem.setText("Delete");
+    deleteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            deleteMenuItemActionPerformed(evt);
+        }
+    });
+    gameKeysMenu.add(deleteMenuItem);
+
+    menuBar.add(gameKeysMenu);
+
+    helpMenu.setText("Help");
+
+    documentationMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+    documentationMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/help.png"))); // NOI18N
+    documentationMenuItem.setText("Documentation");
+    helpMenu.add(documentationMenuItem);
+    helpMenu.add(jSeparator1);
+
+    aboutMidiWoWMenuItem.setText("About MidiWoW");
+    helpMenu.add(aboutMidiWoWMenuItem);
+
+    menuBar.add(helpMenu);
+
+    setJMenuBar(menuBar);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -232,7 +360,7 @@ public class MainWindow extends JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(createGameKeysButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(saveGameButton)
+                                    .addComponent(saveGameKeysButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(saveAsButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -259,13 +387,13 @@ public class MainWindow extends JFrame {
                         .addComponent(selectGameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(createGameKeysButton)
                         .addComponent(deleteGameKeysButton)
-                        .addComponent(saveGameButton)
+                        .addComponent(saveGameKeysButton)
                         .addComponent(saveAsButton)
                         .addComponent(jLabel1))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addComponent(jScrollPane1))
-            .addContainerGap(85, Short.MAX_VALUE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     pack();
@@ -295,63 +423,69 @@ public class MainWindow extends JFrame {
         }
     }//GEN-LAST:event_selectGameComboBoxActionPerformed
 
-    private void saveGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveGameButtonActionPerformed
-        if (selectGameComboBox.getSelectedItem() != null) {
-            GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem());
-//            setBacklightNotEmptyKeys();
-        }
-    }//GEN-LAST:event_saveGameButtonActionPerformed
+    private void saveGameKeysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveGameKeysButtonActionPerformed
+        saveGameKeys();
+    }//GEN-LAST:event_saveGameKeysButtonActionPerformed
 
     private void createGameKeysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createGameKeysButtonActionPerformed
-        String gameName = JOptionPane.showInputDialog(this, "Input game name (English letters and numbers):");
-        Matcher matcher = pattern.matcher(gameName);
-        if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
-            GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.createEmptyKeys(gameName);
-            selectGameComboBox.addItem(gameName);
-            selectGameComboBox.setSelectedItem(gameName);
-            setBacklightNotEmptyKeys();
-        } else {
-            JOptionPane.showMessageDialog(this, "Propertie does'n exist. Use English letters and numbers in name");
-        }
+        createGameKeys();
     }//GEN-LAST:event_createGameKeysButtonActionPerformed
 
     private void deleteGameKeysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteGameKeysButtonActionPerformed
-        GameKeys gameKeys = GameKeys.getInstance();
-        gameKeys.deleteProperty((String) selectGameComboBox.getSelectedItem());
-        selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
-        setBacklightNotEmptyKeys();
+        deleteGameKeys();
     }//GEN-LAST:event_deleteGameKeysButtonActionPerformed
 
     private void saveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsButtonActionPerformed
-        String gameName = JOptionPane.showInputDialog(this, "Input new game name (English letters and numbers):");
-        Matcher matcher = pattern.matcher(gameName);
-        if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
-            GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.saveKeys(gameName);
-            selectGameComboBox.addItem(gameName);
-            selectGameComboBox.setSelectedItem(gameName);
-            setBacklightNotEmptyKeys();
-        } else {
-            JOptionPane.showMessageDialog(this, "Propertie does'n save and exist. Use English letters and numbers in name");
-        }
+        saveAsGameKeys();
     }//GEN-LAST:event_saveAsButtonActionPerformed
+
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+        WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);    
+    }//GEN-LAST:event_exitMenuItemActionPerformed
+
+    private void createMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createMenuItemActionPerformed
+        createGameKeys();
+    }//GEN-LAST:event_createMenuItemActionPerformed
+
+    private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
+        saveGameKeys();
+    }//GEN-LAST:event_saveMenuItemActionPerformed
+
+    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+        saveAsGameKeys();
+    }//GEN-LAST:event_saveAsMenuItemActionPerformed
+
+    private void deleteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMenuItemActionPerformed
+        deleteGameKeys();
+    }//GEN-LAST:event_deleteMenuItemActionPerformed
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMidiWoWMenuItem;
     private javax.swing.JButton createGameKeysButton;
+    private javax.swing.JMenuItem createMenuItem;
     private javax.swing.JButton deleteGameKeysButton;
+    private javax.swing.JMenuItem deleteMenuItem;
+    private javax.swing.JMenuItem documentationMenuItem;
+    private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenu gameKeysMenu;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel infoSelectedDeviceLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JMenuBar menuBar;
     private javax.swing.JComboBox midiDevicesComboBox;
     private javax.swing.JLabel midiDevicesLabel;
     private javax.swing.JList midiMessagesList;
     private javax.swing.JPanel pianoKeysPanel;
     private javax.swing.JButton saveAsButton;
-    private javax.swing.JButton saveGameButton;
+    private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JButton saveGameKeysButton;
+    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JComboBox selectGameComboBox;
     private javax.swing.JButton selectMidiDeviceButton;
     // End of variables declaration//GEN-END:variables
