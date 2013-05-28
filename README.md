@@ -1,4 +1,4 @@
-# MidiWoW
+# MidiWoW [![Build Status](https://travis-ci.org/vylgin/MidiWoW.png?branch=master)](https://travis-ci.org/vylgin/MidiWoW)
 
 **Current Status: Release candidate**
 
