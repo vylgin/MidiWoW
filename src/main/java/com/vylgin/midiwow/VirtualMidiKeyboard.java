@@ -1,6 +1,7 @@
 package com.vylgin.midiwow;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -230,12 +231,16 @@ public class VirtualMidiKeyboard extends JPanel{
             keyColor = label.getBackground();
             label.setBackground(Color.LIGHT_GRAY);
             VirtualMidiKeyboard.this.repaint();
+            MainWindow topFrame = (MainWindow) getTopLevelAncestor();
+            topFrame.setStatusBarText("Midi key number: " + label.getText() + ", PC keyboard keys: " + label.getToolTipText() + ".");
         }
 
         public void mouseExited(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
             label.setBackground(keyColor);
             VirtualMidiKeyboard.this.repaint();
+            MainWindow topFrame = (MainWindow) getTopLevelAncestor();
+            topFrame.setStatusBarText(topFrame.getReadyStatusBarText());
         }
     }
 }
