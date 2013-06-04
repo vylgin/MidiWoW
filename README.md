@@ -8,4 +8,4 @@
 
 This program for play in PC Games on midi keybord.
 
-![ScreenShot](https://raw.github.com/vylgin/MidiWoW/develop/src/main/resources/images/MainWindow-0.9.3.jpg)
+![ScreenShot](https://raw.github.com/vylgin/MidiWoW/master/src/main/resources/images/MainWindow-0.9.3.jpg)
