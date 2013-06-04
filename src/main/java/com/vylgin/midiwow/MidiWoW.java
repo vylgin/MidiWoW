@@ -46,7 +46,7 @@ public class MidiWoW {
     private void go() {
         MainWindow frame = new MainWindow();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 350);
+        frame.setSize(1000, 365);
         frame.setVisible(true);
         frame.setMidiDeviceNames(getMidiNamesDevicesInfo());
     }
