@@ -15,22 +15,20 @@ import java.util.logging.Logger;
  * @author vylgin
  */
 public class GameKeys {
-    /**
-     * Text of Empty key
-     */
     public static final String emptyKeyText = "Empty";
-    
     private volatile static GameKeys gameKeys;
-    private ArrayList<ArrayList<Integer>> midiKeys;
-    private static final int midiKeySize = 127;
-    private static final int emptyNote = -1;
     
-    private static Properties props = new Properties();
     private static final String dirSeparator = System.getProperty("file.separator");
-    private static String fileName;
     private static final String fileExtension = ".properties";
     private static final String propertiesNameDir = "properties";
+    private static final int midiKeySize = 127;
+    private static final int emptyNote = -1;
+        
+    private static Properties props = new Properties();
+    private static String fileName;
     private static File currentDir = new File(".");
+    
+    private ArrayList<ArrayList<Integer>> midiKeys;
     
     private GameKeys() {
         midiKeys = new ArrayList<ArrayList<Integer>>();
@@ -87,7 +85,7 @@ public class GameKeys {
      * Create empty keys of midi keyboard for PC Game Name
      * @param gameName PC Game Name
      */
-    public void createEmptyKeys(String gameName) {
+    public boolean createEmptyKeys(String gameName) {
         try {
             String fName = gameName + fileExtension;
             String filePath = currentDir.getCanonicalPath() + dirSeparator 
@@ -101,8 +99,10 @@ public class GameKeys {
             props.store(out, "Created with createEmptyKeys method");
             out.flush();
             out.close();
+            return true;
         } catch (IOException ex) {
             Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
         
     }
@@ -111,7 +111,7 @@ public class GameKeys {
      * Save parameters of PC Game Name from properties folder
      * @param gameName PC Game Name
      */
-    public void saveKeys(String gameName) {      
+    public boolean saveKeys(String gameName) {      
         try {
             fileName = gameName + fileExtension;
             String filePath = currentDir.getCanonicalPath() + dirSeparator 
@@ -131,9 +131,11 @@ public class GameKeys {
             props.store(out, "Created with saveKeys method");
             out.flush();
             out.close();
+            return true;
         } catch (IOException e) {
             System.out.println("IO Error in GameKeys class saveKeys method!");
             e.printStackTrace();
+            return false;
         }
     }
     
@@ -141,7 +143,7 @@ public class GameKeys {
      * Load parameters of game name from properties folder
      * @param gameName PC Game Name
      */
-    public void loadKeys(String gameName) {
+    public boolean loadKeys(String gameName) {
         try {
             fileName = gameName + fileExtension;
             String filePath = currentDir.getCanonicalPath() + dirSeparator + propertiesNameDir + dirSeparator + fileName;
@@ -158,8 +160,10 @@ public class GameKeys {
                 }
                 setKeyboardKeys(i, list);
             }   
+            return true;
         } catch (IOException ex) {
             Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
     
@@ -168,7 +172,7 @@ public class GameKeys {
      * @param gameName PC Game Name
      * @return <code>true</code>, if properties file deleted
      */
-    public boolean deleteProperty(String gameName) {
+    public boolean deleteKeys(String gameName) {
         try {
             String fName = gameName + fileExtension;
             String filePath = currentDir.getCanonicalPath() + dirSeparator 
@@ -180,6 +184,7 @@ public class GameKeys {
             }
         } catch (IOException ex) {
             Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
         return false;
     }
