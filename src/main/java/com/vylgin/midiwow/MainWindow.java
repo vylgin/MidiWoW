@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vylgin.midiwow;
 
 import java.awt.AWTException;
@@ -31,8 +27,6 @@ import javax.swing.JOptionPane;
  * @author vylgin
  */
 public class MainWindow extends JFrame {
-    private final DefaultListModel listModel = new DefaultListModel();
-    private DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>();
     private static final Pattern patternGameName = Pattern.compile("[a-zA-Z\\d\\s]+");
     private static final String propertiesNameDir = "properties";
     private static final String fileExtension = ".properties";
@@ -45,6 +39,9 @@ public class MainWindow extends JFrame {
     private static final String saveGameKeysText = "Save this Game Keys profile.";
     private static final String saveAsGameKeysText = "Save As this Game Keys profile.";
     private static final String deleteGameKeysText = "Delete this Game Keys profile.";
+    
+    private final DefaultListModel listModel = new DefaultListModel();
+    private DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>();
     
     private static enum MidiKeyEvent {
         KEY_PRESS_EVENT,
@@ -117,45 +114,82 @@ public class MainWindow extends JFrame {
     }
     
     private void createGameKeys() {
-        String gameName = JOptionPane.showInputDialog(this, "Input game name (English letters and numbers):");
+        String gameName = JOptionPane.showInputDialog(this, "Input new Game Keys (English letters and numbers):");
         Matcher matcher = patternGameName.matcher(gameName);
         if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
             GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.createEmptyKeys(gameName);
-            selectGameComboBox.addItem(gameName);
-            selectGameComboBox.setSelectedItem(gameName);
-            setBacklightNotEmptyKeys();
+            if (gameKeys.createEmptyKeys(gameName)) {
+                selectGameComboBox.addItem(gameName);
+                selectGameComboBox.setSelectedItem(gameName);
+                setBacklightNotEmptyKeys();
+                
+                String message = String.format("\"%s\" Game Keys created.", gameName);
+                statusLabel.setText(message);
+            } else {
+                String message = String.format("\"%s\" Game Keys don't created.", gameName);
+                statusLabel.setText(message);
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Propertie does'n exist. Use English letters and numbers in name");
+            String message = String.format( "\"%s\" Game Keys don't created. Use English letters and numbers in name.", gameName);
+            JOptionPane.showMessageDialog(this, message);
+            statusLabel.setText(message);
         }
     }
     
     private void saveGameKeys() {
         if (selectGameComboBox.getSelectedItem() != null) {
             GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem());
+            if (gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem())) {
+                String message = String.format("\"%s\" Game Keys saved.", (String) selectGameComboBox.getSelectedItem());
+                statusLabel.setText(message);
+            } else {
+                String message = String.format("\"%s\" Game Keys don't saved.", (String) selectGameComboBox.getSelectedItem());
+                statusLabel.setText(message);
+                JOptionPane.showMessageDialog(this, message);
+            }
         }
     }
     
     private void saveAsGameKeys() {
-        String gameName = JOptionPane.showInputDialog(this, "Input new game name (English letters and numbers):");
+        String gameName = JOptionPane.showInputDialog(this, "Input new Game Keys (English letters and numbers):");
         Matcher matcher = patternGameName.matcher(gameName);
+        String oldGameName = (String) selectGameComboBox.getSelectedItem();
         if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
             GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.saveKeys(gameName);
-            selectGameComboBox.addItem(gameName);
-            selectGameComboBox.setSelectedItem(gameName);
-            setBacklightNotEmptyKeys();
+            if (gameKeys.saveKeys(gameName)) {
+                selectGameComboBox.addItem(gameName);
+                selectGameComboBox.setSelectedItem(gameName);
+                setBacklightNotEmptyKeys();
+                
+                String message = String.format("\"%s\" Game Keys saved from \"%s\" GameKeys.", gameName, oldGameName);
+                statusLabel.setText(message);
+            } else {
+                String message = String.format("\"%s\" Game Keys don't saved from \"%s\" GameKeys.", gameName, oldGameName);
+                statusLabel.setText(message);
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Propertie does'n save and exist. Use English letters and numbers in name");
+            String message = String.format(
+                    "\"%s\" Game Keys don't saved from \"%s\" GameKeys. Use English letters and numbers in name.", 
+                    gameName, oldGameName);
+            JOptionPane.showMessageDialog(this, message);
+            statusLabel.setText(message);
         }
     }
     
     private void deleteGameKeys() {
         GameKeys gameKeys = GameKeys.getInstance();
-        gameKeys.deleteProperty((String) selectGameComboBox.getSelectedItem());
-        selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
-        setBacklightNotEmptyKeys();
+        String deletedGameName = (String) selectGameComboBox.getSelectedItem();
+        if (gameKeys.deleteKeys(deletedGameName)) {
+            selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
+            setBacklightNotEmptyKeys();  
+            
+            String message = String.format("\"%s\" Game Keys deleted.", deletedGameName);
+            statusLabel.setText(message);
+        } else {
+            String message = String.format("\"%s\" Game Keys don't deleted.", deletedGameName);
+            JOptionPane.showMessageDialog(this, message);
+            statusLabel.setText(message);
+        }
     }
     
     /**
@@ -580,10 +614,13 @@ public class MainWindow extends JFrame {
 
             if (!device.isOpen()) {
                 device.open();
-                infoSelectedDeviceLabel.setText("Midi device \"" + device.getDeviceInfo() + "\" was opened");
+                String message = String.format("Midi device \"%s\" was opened", device.getDeviceInfo());
+                infoSelectedDeviceLabel.setText(message);
+                statusLabel.setText(message);
             }
         } catch (MidiUnavailableException e1) {
-            infoSelectedDeviceLabel.setText("Midi device \"" + midiDevicesComboBox.getSelectedItem() + "\" was don't opened");
+            String message = String.format("Midi device \"%s\" was don't opened", midiDevicesComboBox.getSelectedItem());
+            infoSelectedDeviceLabel.setText(message);
         }
     }//GEN-LAST:event_selectMidiDeviceButtonActionPerformed
 

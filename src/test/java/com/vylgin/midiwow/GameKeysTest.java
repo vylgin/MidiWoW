@@ -72,7 +72,7 @@ public class GameKeysTest {
     }
     
     @Test
-    public void saveAndLoadProperties() {
+    public void saveAndLoadKeys() {
         int note1 = 5;
         int note2 = 3;
         
@@ -108,9 +108,9 @@ public class GameKeysTest {
     }
     
     @Test
-    public void deleteProperties() {
+    public void deleteKeys() {
         gameKeys.createEmptyKeys("WoW3");
         gameKeys.loadKeys("WoW3");
-        assertTrue(gameKeys.deleteProperty("WoW3"));
+        assertTrue(gameKeys.deleteKeys("WoW3"));
     }
 }
