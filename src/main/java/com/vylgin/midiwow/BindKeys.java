@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vylgin.midiwow;
 
 import java.awt.Toolkit;
@@ -25,7 +21,7 @@ public class BindKeys extends javax.swing.JFrame {
         initComponents();
         setNumber(number);
         virtualMidiKeyboard = vmk;
-        setTitle("Note: " + String.valueOf(this.number));
+        setTitle(String.format("Note: %s", String.valueOf(this.number)));
         showKeys();
         
         newKeysLabel.setFocusable(true);
@@ -57,21 +53,21 @@ public class BindKeys extends javax.swing.JFrame {
     private String getNamesOfGameKeys() {
         GameKeys gameKeys = GameKeys.getInstance();
         ArrayList<Integer> list = gameKeys.getKeyboardKeys(number);
-        String result = "";
+        StringBuilder result = new StringBuilder("");
 
         for (int j = 0; j < list.size(); j++) {
-            if (j == list.size() - 1 || list.size() == 1) {
-                result += (list.get(j) == GameKeys.getEmptyNote())
-                        ? GameKeys.emptyKeyText
-                        : String.valueOf(KeyEvent.getKeyText(list.get(j)));
+            if (list.get(j) == GameKeys.getEmptyNote()) {
+                result.append(GameKeys.emptyKeyText);
             } else {
-                result += (list.get(j) == GameKeys.getEmptyNote())
-                        ? GameKeys.emptyKeyText + "\n"
-                        : String.valueOf(KeyEvent.getKeyText(list.get(j))) + "\n";
+                result.append(String.valueOf(KeyEvent.getKeyText(list.get(j))));
+            }
+            
+            if (j < list.size() - 1) {
+                result.append("\n");
             }
         }
 
-        return result;
+        return result.toString();
     }
 
     /**
@@ -228,7 +224,6 @@ public class BindKeys extends javax.swing.JFrame {
         newKeysTextArea.append(keyName + "\n");
 
         newKeysList.add(keyCode);
-        
     }//GEN-LAST:event_newKeysLabelKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
