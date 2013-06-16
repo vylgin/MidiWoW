@@ -101,7 +101,7 @@ public class GameKeys {
             out.close();
             return true;
         } catch (IOException ex) {
-            Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+            //TODO: Add logger
             return false;
         }
         
@@ -119,12 +119,13 @@ public class GameKeys {
             
             for (int i = 0; i <= midiKeySize; i++) {
                 ArrayList<Integer> list = midiKeys.get(i);
-                String keys = "";
+                StringBuilder keys = new StringBuilder("");
                 
                 for (int key : list) {
-                    keys += String.valueOf(key) + " ";
+                    keys.append(String.valueOf(key));
+                    keys.append(" ");
                 }
-                props.setProperty(String.valueOf(i), keys);
+                props.setProperty(String.valueOf(i), keys.toString());
             }
             
             FileOutputStream out = new FileOutputStream(filePath);
@@ -133,8 +134,7 @@ public class GameKeys {
             out.close();
             return true;
         } catch (IOException e) {
-            System.out.println("IO Error in GameKeys class saveKeys method!");
-            e.printStackTrace();
+            //TODO: Add logger
             return false;
         }
     }
@@ -161,8 +161,8 @@ public class GameKeys {
                 setKeyboardKeys(i, list);
             }   
             return true;
-        } catch (IOException ex) {
-            Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException e) {
+            //TODO: Add logger
             return false;
         }
     }
@@ -182,8 +182,8 @@ public class GameKeys {
             if (file.delete()) {
                 return true;   
             }
-        } catch (IOException ex) {
-            Logger.getLogger(GameKeys.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException e) {
+            //TODO: Add logger
             return false;
         }
         return false;

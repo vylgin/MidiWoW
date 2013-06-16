@@ -71,7 +71,8 @@ public class MainWindow extends JFrame {
         initComponents();
         selectGameComboBox.setModel(comboBoxModel);
         initializeGameComboBox();
-        statusLabel.setText(readyStatusBarText);
+        
+        setStatusBarText(readyStatusBarText);
     }
     
     /**
@@ -124,15 +125,15 @@ public class MainWindow extends JFrame {
                 setBacklightNotEmptyKeys();
                 
                 String message = String.format("\"%s\" Game Keys created.", gameName);
-                statusLabel.setText(message);
+                setStatusBarText(message);
             } else {
                 String message = String.format("\"%s\" Game Keys don't created.", gameName);
-                statusLabel.setText(message);
+                setStatusBarText(message);
             }
         } else {
             String message = String.format( "\"%s\" Game Keys don't created. Use English letters and numbers in name.", gameName);
             JOptionPane.showMessageDialog(this, message);
-            statusLabel.setText(message);
+            setStatusBarText(message);
         }
     }
     
@@ -141,10 +142,10 @@ public class MainWindow extends JFrame {
             GameKeys gameKeys = GameKeys.getInstance();
             if (gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem())) {
                 String message = String.format("\"%s\" Game Keys saved.", (String) selectGameComboBox.getSelectedItem());
-                statusLabel.setText(message);
+                setStatusBarText(message);
             } else {
                 String message = String.format("\"%s\" Game Keys don't saved.", (String) selectGameComboBox.getSelectedItem());
-                statusLabel.setText(message);
+                setStatusBarText(message);
                 JOptionPane.showMessageDialog(this, message);
             }
         }
@@ -162,17 +163,17 @@ public class MainWindow extends JFrame {
                 setBacklightNotEmptyKeys();
                 
                 String message = String.format("\"%s\" Game Keys saved from \"%s\" GameKeys.", gameName, oldGameName);
-                statusLabel.setText(message);
+                setStatusBarText(message);
             } else {
                 String message = String.format("\"%s\" Game Keys don't saved from \"%s\" GameKeys.", gameName, oldGameName);
-                statusLabel.setText(message);
+                setStatusBarText(message);
             }
         } else {
             String message = String.format(
                     "\"%s\" Game Keys don't saved from \"%s\" GameKeys. Use English letters and numbers in name.", 
                     gameName, oldGameName);
             JOptionPane.showMessageDialog(this, message);
-            statusLabel.setText(message);
+            setStatusBarText(message);
         }
     }
     
@@ -184,11 +185,11 @@ public class MainWindow extends JFrame {
             setBacklightNotEmptyKeys();  
             
             String message = String.format("\"%s\" Game Keys deleted.", deletedGameName);
-            statusLabel.setText(message);
+            setStatusBarText(message);
         } else {
             String message = String.format("\"%s\" Game Keys don't deleted.", deletedGameName);
             JOptionPane.showMessageDialog(this, message);
-            statusLabel.setText(message);
+            setStatusBarText(message);
         }
     }
     
@@ -616,7 +617,7 @@ public class MainWindow extends JFrame {
                 device.open();
                 String message = String.format("Midi device \"%s\" was opened", device.getDeviceInfo());
                 infoSelectedDeviceLabel.setText(message);
-                statusLabel.setText(message);
+                setStatusBarText(message);
             }
         } catch (MidiUnavailableException e1) {
             String message = String.format("Midi device \"%s\" was don't opened", midiDevicesComboBox.getSelectedItem());
@@ -669,139 +670,139 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_deleteMenuItemActionPerformed
 
     private void midiDevicesComboBoxMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_midiDevicesComboBoxMouseEntered
-        statusLabel.setText("Change midi device.");
+        setStatusBarText("Change midi device.");
     }//GEN-LAST:event_midiDevicesComboBoxMouseEntered
 
     private void midiDevicesComboBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_midiDevicesComboBoxMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_midiDevicesComboBoxMouseExited
 
     private void selectMidiDeviceButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectMidiDeviceButtonMouseEntered
-        statusLabel.setText("Select midi device.");
+        setStatusBarText("Select midi device.");
     }//GEN-LAST:event_selectMidiDeviceButtonMouseEntered
 
     private void selectMidiDeviceButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectMidiDeviceButtonMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_selectMidiDeviceButtonMouseExited
 
     private void selectGameComboBoxMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameComboBoxMouseEntered
-        statusLabel.setText("Change Game Keys profile.");
+        setStatusBarText("Change Game Keys profile.");
     }//GEN-LAST:event_selectGameComboBoxMouseEntered
 
     private void selectGameComboBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameComboBoxMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_selectGameComboBoxMouseExited
 
     private void createGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createGameKeysButtonMouseEntered
-        statusLabel.setText(createGameKeysText);
+        setStatusBarText(createGameKeysText);
     }//GEN-LAST:event_createGameKeysButtonMouseEntered
 
     private void createGameKeysButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createGameKeysButtonMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_createGameKeysButtonMouseExited
 
     private void saveGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveGameKeysButtonMouseEntered
-        statusLabel.setText(saveGameKeysText);
+        setStatusBarText(saveGameKeysText);
     }//GEN-LAST:event_saveGameKeysButtonMouseEntered
 
     private void saveGameKeysButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveGameKeysButtonMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_saveGameKeysButtonMouseExited
 
     private void saveAsButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsButtonMouseEntered
-        statusLabel.setText(saveAsGameKeysText);
+        setStatusBarText(saveAsGameKeysText);
     }//GEN-LAST:event_saveAsButtonMouseEntered
 
     private void saveAsButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsButtonMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_saveAsButtonMouseExited
 
     private void deleteGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteGameKeysButtonMouseEntered
-        statusLabel.setText(deleteGameKeysText);
+        setStatusBarText(deleteGameKeysText);
     }//GEN-LAST:event_deleteGameKeysButtonMouseEntered
 
     private void deleteGameKeysButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteGameKeysButtonMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_deleteGameKeysButtonMouseExited
 
     private void exitMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMenuItemMouseEntered
-        statusLabel.setText("Close this program.");
+        setStatusBarText("Close this program.");
     }//GEN-LAST:event_exitMenuItemMouseEntered
 
     private void exitMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_exitMenuItemMouseExited
 
     private void createMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createMenuItemMouseEntered
-        statusLabel.setText(createGameKeysText);
+        setStatusBarText(createGameKeysText);
     }//GEN-LAST:event_createMenuItemMouseEntered
 
     private void createMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_createMenuItemMouseExited
 
     private void saveMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMenuItemMouseEntered
-        statusLabel.setText(saveGameKeysText);
+        setStatusBarText(saveGameKeysText);
     }//GEN-LAST:event_saveMenuItemMouseEntered
 
     private void saveMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_saveMenuItemMouseExited
 
     private void saveAsMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsMenuItemMouseEntered
-        statusLabel.setText(saveAsGameKeysText);
+        setStatusBarText(saveAsGameKeysText);
     }//GEN-LAST:event_saveAsMenuItemMouseEntered
 
     private void saveAsMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_saveAsMenuItemMouseExited
 
     private void deleteMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMenuItemMouseEntered
-        statusLabel.setText(deleteGameKeysText);
+        setStatusBarText(deleteGameKeysText);
     }//GEN-LAST:event_deleteMenuItemMouseEntered
 
     private void deleteMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_deleteMenuItemMouseExited
 
     private void documentationMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_documentationMenuItemMouseEntered
-        statusLabel.setText("View documentation.");
+        setStatusBarText("View documentation.");
     }//GEN-LAST:event_documentationMenuItemMouseEntered
 
     private void documentationMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_documentationMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_documentationMenuItemMouseExited
 
     private void aboutMidiWoWMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aboutMidiWoWMenuItemMouseEntered
-        statusLabel.setText("View information about MidiWoW program.");
+        setStatusBarText("View information about MidiWoW program.");
     }//GEN-LAST:event_aboutMidiWoWMenuItemMouseEntered
 
     private void aboutMidiWoWMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aboutMidiWoWMenuItemMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_aboutMidiWoWMenuItemMouseExited
 
     private void fileMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuMouseEntered
-        statusLabel.setText("Open File menu.");
+        setStatusBarText("Open File menu.");
     }//GEN-LAST:event_fileMenuMouseEntered
 
     private void fileMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_fileMenuMouseExited
 
     private void gameKeysMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gameKeysMenuMouseEntered
-        statusLabel.setText("Open Game Keys menu.");
+        setStatusBarText("Open Game Keys menu.");
     }//GEN-LAST:event_gameKeysMenuMouseEntered
 
     private void gameKeysMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gameKeysMenuMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_gameKeysMenuMouseExited
 
     private void helpMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpMenuMouseEntered
-        statusLabel.setText("Open Help menu");
+        setStatusBarText("Open Help menu");
     }//GEN-LAST:event_helpMenuMouseEntered
 
     private void helpMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpMenuMouseExited
-        statusLabel.setText(readyStatusBarText);
+        setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_helpMenuMouseExited
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -840,54 +841,11 @@ public class MainWindow extends JFrame {
     * The handler of the received messages
     * @author vylgin
     */
-    public class MidiInputReceiver implements Receiver {
-        
+    public class MidiInputReceiver implements Receiver {      
         private static final int SYSTEM_MIDI_SIGNAL = 248;
         private static final int NOTE_ON_MIDI_SIGNAL = 144;
         private static final int NOTE_OFF_MIDI_SIGNAL = 128;
-
-        private void eventKeyEmit(ArrayList<Integer> keysEventList, MidiKeyEvent keyPressEvent) {
-            switch (keyPressEvent) {
-                case KEY_PRESS_EVENT:
-                    try {
-                        Robot robot = new Robot();
-                        for (int key : keysEventList) {
-                            if (key != GameKeys.getEmptyNote()) {
-                                robot.keyPress(key);
-                                listModel.addElement("Pressed key: " + KeyEvent.getKeyText(key));
-                            }
-                        }                        
-                    } catch (AWTException e) { }
-                    break;
-                case KEY_RELEASE_EVENT:
-                    try {
-                        Robot robot = new Robot();
-                        for (int key : keysEventList) {
-                            if (key != GameKeys.getEmptyNote()) {
-                                robot.keyRelease(key); 
-                                listModel.addElement("Released key: " + KeyEvent.getKeyText(key));
-                            }
-                        }                        
-                    } catch (AWTException e) { }
-                    break;
-                default:
-                    midiMessagesList.repaint();
-            }
-        }
         
-        private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
-            GameKeys gameKeys = GameKeys.getInstance();
-            ArrayList<Integer> listKeys = gameKeys.getKeyboardKeys(numberMidiKeyEvent);
-            switch (statusMidiKey) {
-                case NOTE_ON_MIDI_SIGNAL:
-                    eventKeyEmit(listKeys, MidiKeyEvent.KEY_PRESS_EVENT);
-                    break;
-                case NOTE_OFF_MIDI_SIGNAL:
-                    eventKeyEmit(listKeys, MidiKeyEvent.KEY_RELEASE_EVENT);
-                    break;
-            }
-        }
-
         @Override
         public void send(MidiMessage message, long timeStamp) {
             ShortMessage event = (ShortMessage) message;
@@ -913,6 +871,80 @@ public class MainWindow extends JFrame {
 
         @Override
         public void close() {
+        }
+   
+        private void showErrorKeyEmitInfo(ArrayList<Integer> keysEventList, MidiKeyEvent midiKeyEvent) {
+            StringBuilder message = new StringBuilder("Keys error ");
+            
+            switch (midiKeyEvent) {
+                case KEY_PRESS_EVENT:
+                    message.append("pressed");
+                    break;
+                case KEY_RELEASE_EVENT:
+                    message.append("released");
+                    break;                    
+            }
+
+            message.append(": ");
+
+            for (int key : keysEventList) {
+                if (key != GameKeys.getEmptyNote()) {
+                    message.append(KeyEvent.getKeyText(key));
+                    message.append(" ");
+                }
+            }
+            
+            message.append("(keys names). Codes: ");
+            message.append(keysEventList.toString());
+            
+            JOptionPane.showMessageDialog(MainWindow.this, message);
+            setStatusBarText(message.toString());
+        }
+
+        private void eventKeyEmit(ArrayList<Integer> keysEventList, MidiKeyEvent midiKeyEvent) {
+            switch (midiKeyEvent) {
+                case KEY_PRESS_EVENT:
+                    try {
+                        Robot robot = new Robot();
+                        for (int key : keysEventList) {
+                            if (key != GameKeys.getEmptyNote()) {
+                                robot.keyPress(key);
+                                listModel.addElement("Pressed key: " + KeyEvent.getKeyText(key));
+                            }
+                        }                        
+                    } catch (AWTException e) {
+                        showErrorKeyEmitInfo(keysEventList, midiKeyEvent);
+                    }
+                    break;
+                case KEY_RELEASE_EVENT:
+                    try {
+                        Robot robot = new Robot();
+                        for (int key : keysEventList) {
+                            if (key != GameKeys.getEmptyNote()) {
+                                robot.keyRelease(key); 
+                                listModel.addElement("Released key: " + KeyEvent.getKeyText(key));
+                            }
+                        }                        
+                    } catch (AWTException e) {
+                        showErrorKeyEmitInfo(keysEventList, midiKeyEvent);
+                    }
+                    break;
+                default:
+                    midiMessagesList.repaint();
+            }
+        }
+        
+        private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
+            GameKeys gameKeys = GameKeys.getInstance();
+            ArrayList<Integer> listKeys = gameKeys.getKeyboardKeys(numberMidiKeyEvent);
+            switch (statusMidiKey) {
+                case NOTE_ON_MIDI_SIGNAL:
+                    eventKeyEmit(listKeys, MidiKeyEvent.KEY_PRESS_EVENT);
+                    break;
+                case NOTE_OFF_MIDI_SIGNAL:
+                    eventKeyEmit(listKeys, MidiKeyEvent.KEY_RELEASE_EVENT);
+                    break;
+            }
         }
     }
 }
