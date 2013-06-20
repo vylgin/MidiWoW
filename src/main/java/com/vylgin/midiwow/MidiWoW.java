@@ -4,13 +4,18 @@ import java.util.Collections;
 import java.util.Vector;
 import javax.sound.midi.*;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class for runing program
  * @author vylgin
  */
 public class MidiWoW {
+    private static Logger log = LoggerFactory.getLogger(MidiWoW.class.getName());
+    
     public static void main(String[] args) {
+        log.info("MidiWoW starting.");
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -18,18 +23,13 @@ public class MidiWoW {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException e) {
+            log.error("Exception!", e);
         }
         
         MidiWoW midiWoW = new MidiWoW();
         midiWoW.go();
+        log.info("MidiWoW started.");
     }
 
     /**
@@ -40,6 +40,7 @@ public class MidiWoW {
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
         Vector<MidiDevice.Info> namesMidiDevices = new Vector<MidiDevice.Info>();
         Collections.addAll(namesMidiDevices, infos);
+        log.info("Getted midi devices info from OS.");
         return namesMidiDevices;
     }
     

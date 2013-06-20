@@ -9,21 +9,24 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Panel virtual piano keyboard
  * @author vylgin
  */
 public class VirtualMidiKeyboard extends JPanel{
-    
+    private static Logger log = LoggerFactory.getLogger(VirtualMidiKeyboard.class.getName());
     private JLabel[] pianoKeys = new JLabel[128];
     private static final String whiteKeysName = "white";
     private static final String blackKeysName = "black";
     private static final Color backgroindKeysBeforePressed[] = new Color[128];
-    private static final Color backgroundWhiteKeyPressed = new Color(193, 205, 205);
-    private static final Color backgroundBlackKeyPressed = new Color(108, 123, 139);
+    private static final Color backgroundWhiteKeyUsed = new Color(193, 205, 205);
+    private static final Color backgroundBlackKeyUsed = new Color(108, 123, 139);
     
     public VirtualMidiKeyboard() {
+        log.info("Creating Virtual Midi Keyboard panel.");
         createKeys();
         setPreferredSize(new Dimension(1500, 140));
         
@@ -32,6 +35,7 @@ public class VirtualMidiKeyboard extends JPanel{
         }
         
         setToolTipKeys();
+        log.info("Virtual Midi Keyboard panel created.");
     }
     
     /**
@@ -42,6 +46,7 @@ public class VirtualMidiKeyboard extends JPanel{
         backgroindKeysBeforePressed[key] = pianoKeys[key].getBackground();
         pianoKeys[key].setBackground(Color.GREEN);
         repaint();
+        log.debug("Backlight ON note number: {}.", key);
     }
     
     /**
@@ -49,63 +54,79 @@ public class VirtualMidiKeyboard extends JPanel{
      * @param key key of midi keyboard
      */
     public void backlightOffKey(int key) {
-        if (pianoKeys[key].getName().equals(whiteKeysName)) {
-            pianoKeys[key].setBackground(Color.WHITE);
-            pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
-        } else if (pianoKeys[key].getName().equals(blackKeysName)) {
-            pianoKeys[key].setBackground(Color.BLACK);
-            pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
+        switch (pianoKeys[key].getName()) {
+            case whiteKeysName:
+                pianoKeys[key].setBackground(Color.WHITE);
+                pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
+                break;
+            case blackKeysName:
+                pianoKeys[key].setBackground(Color.BLACK);
+                pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
+                break;
         }
 
-        if (backgroindKeysBeforePressed[key] == backgroundWhiteKeyPressed 
-                || backgroindKeysBeforePressed[key] == backgroundBlackKeyPressed) {
-            if (pianoKeys[key].getName().equals(whiteKeysName)) {
-                pianoKeys[key].setBackground(backgroundWhiteKeyPressed);
-            } else if (pianoKeys[key].getName().equals(blackKeysName)) {
-                pianoKeys[key].setBackground(backgroundBlackKeyPressed);
+        if (backgroindKeysBeforePressed[key] == backgroundWhiteKeyUsed 
+                || backgroindKeysBeforePressed[key] == backgroundBlackKeyUsed) {
+            switch (pianoKeys[key].getName()) {
+                case whiteKeysName:
+                    pianoKeys[key].setBackground(backgroundWhiteKeyUsed);
+                    break;
+                case blackKeysName:
+                    pianoKeys[key].setBackground(backgroundBlackKeyUsed);
+                    break;
             }
             backgroindKeysBeforePressed[key] = pianoKeys[key].getBackground();
             pianoKeys[key].setBorder(BorderFactory.createLineBorder(Color.black));
-        } 
+        }
         
         repaint();
+        log.debug("Backlight OFF note number: {}.", key);
     }
     
     /**
      * Method install the background color for keys that is used
      */
     public void backlightNotEmptyKeys() {
+        log.debug("Backlighting not empty keys.");
         GameKeys gameKeys = GameKeys.getInstance();
-        
         for (int i = 0; i < pianoKeys.length; i++) {
             ArrayList<Integer> list = gameKeys.getKeyboardKeys(i);
-            if (!list.get(0).equals(gameKeys.getEmptyNote())) {
-                if (pianoKeys[i].getName().equals(whiteKeysName)) {
-                    pianoKeys[i].setBackground(backgroundWhiteKeyPressed);
-                } else if (pianoKeys[i].getName().equals(blackKeysName)) {
-                    pianoKeys[i].setBackground(backgroundBlackKeyPressed);
+            if (!list.get(0).equals(GameKeys.getEmptyNote())) {
+                switch (pianoKeys[i].getName()) {
+                    case whiteKeysName:
+                        pianoKeys[i].setBackground(backgroundWhiteKeyUsed);
+                        break;
+                    case blackKeysName:
+                        pianoKeys[i].setBackground(backgroundBlackKeyUsed);
+                        break;
                 }
                 pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
             }
         }
         repaint();
         setToolTipKeys();
+        log.debug("Backlighted not empty keys.");
     }
     
     /**
      * Clear all background except for the initial
      */
     public void clearBacklight() {
+        log.debug("Clearning backlight color.");
         for (int i = 0; i < pianoKeys.length; i++) {
-            if (pianoKeys[i].getName().equals(whiteKeysName)) {
-                pianoKeys[i].setBackground(Color.WHITE);
-                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
-            } else if (pianoKeys[i].getName().equals(blackKeysName)) {
-                pianoKeys[i].setBackground(Color.BLACK);
-                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
+            switch (pianoKeys[i].getName()) {
+                case whiteKeysName:
+                    pianoKeys[i].setBackground(Color.WHITE);
+                    pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
+                    break;
+                case blackKeysName:
+                    pianoKeys[i].setBackground(Color.BLACK);
+                    pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
+                    break;
             }
         }
         repaint();
+        log.debug("Cleared backlight color.");
     }
     
     private void insertWhiteKey(int index, String name) {
@@ -140,7 +161,8 @@ public class VirtualMidiKeyboard extends JPanel{
         pianoKeys[Integer.parseInt(name)] = key;
     }
       
-    private void createKeys() {        
+    private void createKeys() { 
+        log.debug("Creating keys.");
         ArrayList<Integer> wKeys = new ArrayList<Integer>();
         wKeys.add(0); 
         wKeys.add(2);
@@ -174,6 +196,7 @@ public class VirtualMidiKeyboard extends JPanel{
             bKeys.add(firstElement + 12);
             bKeys.remove(0);
         }
+        log.debug("Keys created.");
     }
     
     private void setToolTipKeys() {
@@ -204,10 +227,14 @@ public class VirtualMidiKeyboard extends JPanel{
      */
     public class keysMouseListener implements MouseListener{
         private Color keyColor;
+        
+        @Override
         public void mouseClicked(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
             label.setBackground(Color.RED);
             VirtualMidiKeyboard.this.repaint();
+            
+            log.debug("Mouse clicked on \"{}\" midi key", label.getText());
             
             BindKeys bind = new BindKeys(Integer.valueOf(label.getText()), VirtualMidiKeyboard.this);
             Point position = getParent().getLocationOnScreen();
@@ -217,16 +244,20 @@ public class VirtualMidiKeyboard extends JPanel{
             bind.setVisible(true);
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
             
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             
         }
 
+        @Override
         public void mouseEntered(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
+            log.debug("Mouse entered on \"{}\" midi key", label.getText());
             keyColor = label.getBackground();
             label.setBackground(Color.LIGHT_GRAY);
             VirtualMidiKeyboard.this.repaint();
@@ -234,8 +265,10 @@ public class VirtualMidiKeyboard extends JPanel{
             topFrame.setStatusBarText("Midi key number: " + label.getText() + ", PC keyboard keys: " + label.getToolTipText() + ".");
         }
 
+        @Override
         public void mouseExited(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
+            log.debug("Mouse exited of \"{}\" midi key", label.getText());
             label.setBackground(keyColor);
             VirtualMidiKeyboard.this.repaint();
             MainWindow topFrame = (MainWindow) getTopLevelAncestor();

@@ -4,12 +4,15 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for binding midi keyboard keys with PC keyboard keys
  * @author vylgin
  */
 public class BindKeys extends javax.swing.JFrame {
+    private static Logger log = LoggerFactory.getLogger(BindKeys.class.getName());
     private int number;
     private ArrayList<Integer> newKeysList = new ArrayList<Integer>();
     private VirtualMidiKeyboard virtualMidiKeyboard;
@@ -18,10 +21,13 @@ public class BindKeys extends javax.swing.JFrame {
     * Creates new form BindKeys
     */
     public BindKeys(int number, VirtualMidiKeyboard vmk) {
+        log.info("Creating Bind Keys window.");
         initComponents();
         setNumber(number);
         virtualMidiKeyboard = vmk;
-        setTitle(String.format("Note: %s", String.valueOf(this.number)));
+        String title = String.format("Bind Keys. Note: %s", String.valueOf(this.number));
+        setTitle(title);
+        log.info("Setted title \"{}\"", title);
         showKeys();
         
         newKeysLabel.setFocusable(true);
@@ -40,17 +46,22 @@ public class BindKeys extends javax.swing.JFrame {
         clearButton.setFocusTraversalKeysEnabled(false);
         emptyNoteButton.setFocusTraversalKeysEnabled(false);
         cancelButton.setFocusTraversalKeysEnabled(false);
+        log.info("Bind Keys window created");
     }
     
     private void setNumber(int number) {
         this.number = number;
+        log.debug("Setted note nubmer \"{}\" in Bind Keys", number);
     }
     
     private void showKeys() {
+        log.debug("Showing Bind Keys.");
         currentKeysTextArea.setText(getNamesOfGameKeys());
+        log.debug("Bind Keys showed .");
     }
        
     private String getNamesOfGameKeys() {
+        log.debug("Getting names of Game Keys.");
         GameKeys gameKeys = GameKeys.getInstance();
         ArrayList<Integer> list = gameKeys.getKeyboardKeys(number);
         StringBuilder result = new StringBuilder("");
@@ -67,6 +78,7 @@ public class BindKeys extends javax.swing.JFrame {
             }
         }
 
+        log.debug("Names of Game Keys getted: {}", result.toString());
         return result.toString();
     }
 
@@ -184,46 +196,55 @@ public class BindKeys extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+        log.info("Selecting new keyboard keys for \"{}\" midi key.", number);
         if (!newKeysList.isEmpty()) {
             GameKeys gameKeys = GameKeys.getInstance();
             gameKeys.setKeyboardKeys(number, newKeysList);
             virtualMidiKeyboard.backlightNotEmptyKeys();
         }
+        log.info("New keyboard keys for \"{}\" midi key selected.", number);
         
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+        log.info("Bind Keys closed for \"{}\" midi key from \"Ok\" button", number);
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+        log.info("Bind Keys closed for \"{}\" midi key from \"Cancel\" button", number);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void emptyNoteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emptyNoteButtonActionPerformed
+        log.info("Setting empty keyboard keys for \"{}\" midi key", number);
         newKeysTextArea.setText("");
         
         GameKeys gameKeys = GameKeys.getInstance();
         ArrayList<Integer> list = new ArrayList<Integer>();
-        list.add(gameKeys.getEmptyNote());
+        list.add(GameKeys.getEmptyNote());
         gameKeys.setKeyboardKeys(number, list);
         
         virtualMidiKeyboard.backlightNotEmptyKeys();
+        log.info("Empty keyboard keys for \"{}\" midi key setted", number);
         
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+        log.info("Bind Keys closed for \"{}\" midi key from \"Empty Note\" button", number);
     }//GEN-LAST:event_emptyNoteButtonActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         newKeysTextArea.setText("");
         newKeysList = new ArrayList<Integer>();
+        log.info("Cleared keyboard pressed keys for \"{}\" midi key from \"Empty Note\" button", number);
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void newKeysLabelKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_newKeysLabelKeyReleased
         int keyCode = evt.getKeyCode();
         String keyName = KeyEvent.getKeyText(keyCode);
+        
         newKeysTextArea.append(keyName + "\n");
-
         newKeysList.add(keyCode);
+        log.info("Added new keyboard key \"{}\" for \"{}\" midi key from \"Empty Note\" button", keyName, number);
     }//GEN-LAST:event_newKeysLabelKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
