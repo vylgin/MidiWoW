@@ -21,6 +21,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The main frame at which there are widgets
@@ -28,10 +30,10 @@ import javax.swing.JOptionPane;
  */
 public class MainWindow extends JFrame {
     private static final Pattern patternGameName = Pattern.compile("[a-zA-Z\\d\\s]+");
-    private static final String propertiesNameDir = "properties";
-    private static final String fileExtension = ".properties";
+    private static final String gameKeysDirName = GameKeys.getGameKeysDirName();
+    private static final String gameKeysFileExtension = GameKeys.getGameKeysFileExtension();
     private static final String dirSeparator = System.getProperty("file.separator");
-    private static final String propertiesDirPath = "." + dirSeparator + propertiesNameDir;
+    private static final String propertiesDirPath = "." + dirSeparator + gameKeysDirName;
     private static final File dirProperties = new File(propertiesDirPath);
     
     private static final String readyStatusBarText = "Ready.";
@@ -39,6 +41,8 @@ public class MainWindow extends JFrame {
     private static final String saveGameKeysText = "Save this Game Keys profile.";
     private static final String saveAsGameKeysText = "Save As this Game Keys profile.";
     private static final String deleteGameKeysText = "Delete this Game Keys profile.";
+    
+    private static Logger log = LoggerFactory.getLogger(MainWindow.class.getName());
     
     private final DefaultListModel listModel = new DefaultListModel();
     private DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>();
@@ -60,19 +64,17 @@ public class MainWindow extends JFrame {
      * Creates new form MainWindow
      */
     public MainWindow() {
+        log.info("Creating Main Window.");
         if (!dirProperties.exists()) {
-            dirProperties.mkdir();
-            String defaultGame = "default";
-            GameKeys gameKeys = GameKeys.getInstance();
-            gameKeys.createEmptyKeys(defaultGame);
-            gameKeys.saveKeys(defaultGame);
+            createDefaultGameKeys();
         }
                 
         initComponents();
-        selectGameComboBox.setModel(comboBoxModel);
-        initializeGameComboBox();
+        selectGameKeysComboBox.setModel(comboBoxModel);
+        initializeGameKeysComboBox();
         
         setStatusBarText(readyStatusBarText);
+        log.info("Main Window created.");
     }
     
     /**
@@ -82,6 +84,7 @@ public class MainWindow extends JFrame {
     public void setMidiDeviceNames(Vector<MidiDevice.Info> midiDevices) {
         midiDevicesComboBox.setModel(new DefaultComboBoxModel<MidiDevice.Info>(midiDevices));
         midiMessagesList.setModel(listModel);
+        log.debug("Devices \"{}\" insert in devices combo box.", midiDevices.toString());
     }
     
     public void setStatusBarText(String text) {
@@ -92,81 +95,116 @@ public class MainWindow extends JFrame {
         return readyStatusBarText;
     }
     
-    private void initializeGameComboBox() {
-        for (String file : dirProperties.list()) {
-            int i = file.lastIndexOf('.');
-            String fileName = file.substring(0, i);
-            String fileExtension = file.substring(i, file.length());
-            if (fileExtension.equals(this.fileExtension)) {
-                selectGameComboBox.addItem(fileName);   
-            }
+    private void createDefaultGameKeys() {
+        log.info("Creating default Game Keys.");
+        dirProperties.mkdir();
+        String defaultGameKeysName = "Default Game Keys";
+        GameKeys gameKeys = GameKeys.getInstance();
+        gameKeys.createEmptyKeys(defaultGameKeysName);
+        if (gameKeys.saveKeys(defaultGameKeysName)) {
+            String message = "Default Game Keys created.";
+            setStatusBarText(message);
+            log.info(message);
+        } else {
+            String message = "Default Game Keys don't created.";
+            setStatusBarText(message);
+            log.error(message);
         }
     }
     
+    private void initializeGameKeysComboBox() {
+        log.info("Initializing Game Keys combo box.");
+        for (String file : dirProperties.list()) {
+            int i = file.lastIndexOf('.');
+            String gameName = file.substring(0, i);
+            String fileExtension = file.substring(i, file.length());
+            if (fileExtension.equals(this.gameKeysFileExtension)) {
+                selectGameKeysComboBox.addItem(gameName);
+                log.debug("Added \"{}\" Game Keys in combo box.", gameName);
+            }
+        }
+        log.info("Game Keys initialized.");
+    }
+    
     private void loadSelectedGameKeys() {
+        log.info("Loading selected Game Keys.");
+        String selectedGameKeys = (String) selectGameKeysComboBox.getSelectedItem();
         GameKeys gameKeys = GameKeys.getInstance();
-        gameKeys.loadKeys((String) selectGameComboBox.getSelectedItem());
+        gameKeys.loadKeys(selectedGameKeys);
+        log.info("Loaded selected \"{}\" Game Keys.", selectedGameKeys);
     }
 
     private void setBacklightNotEmptyKeys() {
+        log.debug("Backlight not empty keys begining.");
         VirtualMidiKeyboard vmk = (VirtualMidiKeyboard) pianoKeysPanel;
         vmk.clearBacklight();
         vmk.backlightNotEmptyKeys();
+        log.debug("Backlight not empty keys ended.");
     }
     
     private void createGameKeys() {
+        log.info("Creating Game Keys.");
         String gameName = JOptionPane.showInputDialog(this, "Input new Game Keys (English letters and numbers):");
         Matcher matcher = patternGameName.matcher(gameName);
         if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
             GameKeys gameKeys = GameKeys.getInstance();
             if (gameKeys.createEmptyKeys(gameName)) {
-                selectGameComboBox.addItem(gameName);
-                selectGameComboBox.setSelectedItem(gameName);
+                selectGameKeysComboBox.addItem(gameName);
+                selectGameKeysComboBox.setSelectedItem(gameName);
                 setBacklightNotEmptyKeys();
                 
                 String message = String.format("\"%s\" Game Keys created.", gameName);
                 setStatusBarText(message);
+                log.info(message);
             } else {
                 String message = String.format("\"%s\" Game Keys don't created.", gameName);
                 setStatusBarText(message);
+                log.info(message);
             }
         } else {
             String message = String.format( "\"%s\" Game Keys don't created. Use English letters and numbers in name.", gameName);
             JOptionPane.showMessageDialog(this, message);
             setStatusBarText(message);
+            log.info(message);
         }
     }
     
     private void saveGameKeys() {
-        if (selectGameComboBox.getSelectedItem() != null) {
+        log.info("Saving Game Keys.");
+        if (selectGameKeysComboBox.getSelectedItem() != null) {
             GameKeys gameKeys = GameKeys.getInstance();
-            if (gameKeys.saveKeys((String) selectGameComboBox.getSelectedItem())) {
-                String message = String.format("\"%s\" Game Keys saved.", (String) selectGameComboBox.getSelectedItem());
+            if (gameKeys.saveKeys((String) selectGameKeysComboBox.getSelectedItem())) {
+                String message = String.format("\"%s\" Game Keys saved.", (String) selectGameKeysComboBox.getSelectedItem());
                 setStatusBarText(message);
+                log.info(message);
             } else {
-                String message = String.format("\"%s\" Game Keys don't saved.", (String) selectGameComboBox.getSelectedItem());
+                String message = String.format("\"%s\" Game Keys don't saved.", (String) selectGameKeysComboBox.getSelectedItem());
                 setStatusBarText(message);
                 JOptionPane.showMessageDialog(this, message);
+                log.info(message);
             }
         }
     }
     
     private void saveAsGameKeys() {
+        log.info("Saving Game Keys as.");
         String gameName = JOptionPane.showInputDialog(this, "Input new Game Keys (English letters and numbers):");
         Matcher matcher = patternGameName.matcher(gameName);
-        String oldGameName = (String) selectGameComboBox.getSelectedItem();
+        String oldGameName = (String) selectGameKeysComboBox.getSelectedItem();
         if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
             GameKeys gameKeys = GameKeys.getInstance();
             if (gameKeys.saveKeys(gameName)) {
-                selectGameComboBox.addItem(gameName);
-                selectGameComboBox.setSelectedItem(gameName);
+                selectGameKeysComboBox.addItem(gameName);
+                selectGameKeysComboBox.setSelectedItem(gameName);
                 setBacklightNotEmptyKeys();
                 
                 String message = String.format("\"%s\" Game Keys saved from \"%s\" GameKeys.", gameName, oldGameName);
                 setStatusBarText(message);
+                log.info(message);
             } else {
                 String message = String.format("\"%s\" Game Keys don't saved from \"%s\" GameKeys.", gameName, oldGameName);
                 setStatusBarText(message);
+                log.info(message);
             }
         } else {
             String message = String.format(
@@ -174,22 +212,26 @@ public class MainWindow extends JFrame {
                     gameName, oldGameName);
             JOptionPane.showMessageDialog(this, message);
             setStatusBarText(message);
+            log.info(message);
         }
     }
     
     private void deleteGameKeys() {
+        log.info("Deleting Game Keys.");
         GameKeys gameKeys = GameKeys.getInstance();
-        String deletedGameName = (String) selectGameComboBox.getSelectedItem();
+        String deletedGameName = (String) selectGameKeysComboBox.getSelectedItem();
         if (gameKeys.deleteKeys(deletedGameName)) {
-            selectGameComboBox.removeItemAt(selectGameComboBox.getSelectedIndex());
+            selectGameKeysComboBox.removeItemAt(selectGameKeysComboBox.getSelectedIndex());
             setBacklightNotEmptyKeys();  
             
             String message = String.format("\"%s\" Game Keys deleted.", deletedGameName);
             setStatusBarText(message);
+            log.info(message);
         } else {
             String message = String.format("\"%s\" Game Keys don't deleted.", deletedGameName);
             JOptionPane.showMessageDialog(this, message);
             setStatusBarText(message);
+            log.info(message);
         }
     }
     
@@ -210,7 +252,7 @@ public class MainWindow extends JFrame {
         midiMessagesList = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         pianoKeysPanel = new VirtualMidiKeyboard();
-        selectGameComboBox = new javax.swing.JComboBox();
+        selectGameKeysComboBox = new javax.swing.JComboBox();
         saveGameKeysButton = new javax.swing.JButton();
         createGameKeysButton = new javax.swing.JButton();
         deleteGameKeysButton = new javax.swing.JButton();
@@ -290,18 +332,18 @@ public class MainWindow extends JFrame {
 
     jScrollPane2.setViewportView(pianoKeysPanel);
 
-    selectGameComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-    selectGameComboBox.addMouseListener(new java.awt.event.MouseAdapter() {
+    selectGameKeysComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    selectGameKeysComboBox.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseEntered(java.awt.event.MouseEvent evt) {
-            selectGameComboBoxMouseEntered(evt);
+            selectGameKeysComboBoxMouseEntered(evt);
         }
         public void mouseExited(java.awt.event.MouseEvent evt) {
-            selectGameComboBoxMouseExited(evt);
+            selectGameKeysComboBoxMouseExited(evt);
         }
     });
-    selectGameComboBox.addActionListener(new java.awt.event.ActionListener() {
+    selectGameKeysComboBox.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            selectGameComboBoxActionPerformed(evt);
+            selectGameKeysComboBoxActionPerformed(evt);
         }
     });
 
@@ -562,7 +604,7 @@ public class MainWindow extends JFrame {
                                         .addGroup(layout.createSequentialGroup()
                                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(selectGameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(selectGameKeysComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(createGameKeysButton)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -590,7 +632,7 @@ public class MainWindow extends JFrame {
                     .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(2, 2, 2)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(selectGameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(selectGameKeysComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(createGameKeysButton)
                         .addComponent(deleteGameKeysButton)
                         .addComponent(saveGameKeysButton)
@@ -609,6 +651,8 @@ public class MainWindow extends JFrame {
 
     private void selectMidiDeviceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectMidiDeviceButtonActionPerformed
         try {
+            log.info("Opening midi device");
+            
             MidiDevice device = MidiSystem.getMidiDevice((MidiDevice.Info) midiDevicesComboBox.getSelectedItem());
             Transmitter trans = device.getTransmitter();
             trans.setReceiver(new MidiInputReceiver());
@@ -618,19 +662,21 @@ public class MainWindow extends JFrame {
                 String message = String.format("Midi device \"%s\" was opened", device.getDeviceInfo());
                 infoSelectedDeviceLabel.setText(message);
                 setStatusBarText(message);
+                log.info(message);
             }
         } catch (MidiUnavailableException e1) {
             String message = String.format("Midi device \"%s\" was don't opened", midiDevicesComboBox.getSelectedItem());
             infoSelectedDeviceLabel.setText(message);
+            log.info(message);
         }
     }//GEN-LAST:event_selectMidiDeviceButtonActionPerformed
 
-    private void selectGameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectGameComboBoxActionPerformed
-        if (selectGameComboBox.getSelectedItem() != null) {
+    private void selectGameKeysComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectGameKeysComboBoxActionPerformed
+        if (selectGameKeysComboBox.getSelectedItem() != null) {
             loadSelectedGameKeys();
             setBacklightNotEmptyKeys();
         }
-    }//GEN-LAST:event_selectGameComboBoxActionPerformed
+    }//GEN-LAST:event_selectGameKeysComboBoxActionPerformed
 
     private void saveGameKeysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveGameKeysButtonActionPerformed
         saveGameKeys();
@@ -651,6 +697,7 @@ public class MainWindow extends JFrame {
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);    
+        log.info("Exited program from main menu.");
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void createMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createMenuItemActionPerformed
@@ -685,13 +732,13 @@ public class MainWindow extends JFrame {
         setStatusBarText(readyStatusBarText);
     }//GEN-LAST:event_selectMidiDeviceButtonMouseExited
 
-    private void selectGameComboBoxMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameComboBoxMouseEntered
+    private void selectGameKeysComboBoxMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameKeysComboBoxMouseEntered
         setStatusBarText("Change Game Keys profile.");
-    }//GEN-LAST:event_selectGameComboBoxMouseEntered
+    }//GEN-LAST:event_selectGameKeysComboBoxMouseEntered
 
-    private void selectGameComboBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameComboBoxMouseExited
+    private void selectGameKeysComboBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameKeysComboBoxMouseExited
         setStatusBarText(readyStatusBarText);
-    }//GEN-LAST:event_selectGameComboBoxMouseExited
+    }//GEN-LAST:event_selectGameKeysComboBoxMouseExited
 
     private void createGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createGameKeysButtonMouseEntered
         setStatusBarText(createGameKeysText);
@@ -831,7 +878,7 @@ public class MainWindow extends JFrame {
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JButton saveGameKeysButton;
     private javax.swing.JMenuItem saveMenuItem;
-    private javax.swing.JComboBox selectGameComboBox;
+    private javax.swing.JComboBox selectGameKeysComboBox;
     private javax.swing.JButton selectMidiDeviceButton;
     private javax.swing.JLabel statusLabel;
     private javax.swing.JPanel statusPanel;
@@ -850,7 +897,8 @@ public class MainWindow extends JFrame {
         public void send(MidiMessage message, long timeStamp) {
             ShortMessage event = (ShortMessage) message;
 
-            if (event.getStatus() != SYSTEM_MIDI_SIGNAL) {                              
+            if (event.getStatus() != SYSTEM_MIDI_SIGNAL) {
+                log.debug("Sending midi message.");
                 if (listModel.getSize() >= 8) {
                     listModel.remove(0);
                 }
@@ -866,6 +914,7 @@ public class MainWindow extends JFrame {
                 }
                 
                 bindKeys(event.getStatus(), event.getData1());
+                log.debug("Midi message sended");
             }
         }
 
@@ -899,9 +948,11 @@ public class MainWindow extends JFrame {
             
             JOptionPane.showMessageDialog(MainWindow.this, message);
             setStatusBarText(message.toString());
+            log.error(message.toString());
         }
 
         private void eventKeyEmit(ArrayList<Integer> keysEventList, MidiKeyEvent midiKeyEvent) {
+            log.debug("Begin event key emit.");
             switch (midiKeyEvent) {
                 case KEY_PRESS_EVENT:
                     try {
@@ -909,7 +960,9 @@ public class MainWindow extends JFrame {
                         for (int key : keysEventList) {
                             if (key != GameKeys.getEmptyNote()) {
                                 robot.keyPress(key);
-                                listModel.addElement("Pressed key: " + KeyEvent.getKeyText(key));
+                                String message = String.format("Pressed key:", KeyEvent.getKeyText(key));
+                                listModel.addElement(message);
+                                log.debug(message);
                             }
                         }                        
                     } catch (AWTException e) {
@@ -922,7 +975,9 @@ public class MainWindow extends JFrame {
                         for (int key : keysEventList) {
                             if (key != GameKeys.getEmptyNote()) {
                                 robot.keyRelease(key); 
-                                listModel.addElement("Released key: " + KeyEvent.getKeyText(key));
+                                String message = String.format("Released key: ", KeyEvent.getKeyText(key));
+                                listModel.addElement(message);
+                                log.debug(message);
                             }
                         }                        
                     } catch (AWTException e) {
@@ -932,9 +987,11 @@ public class MainWindow extends JFrame {
                 default:
                     midiMessagesList.repaint();
             }
+            log.debug("Ended event key emit.");
         }
         
         private void bindKeys(int statusMidiKey, int numberMidiKeyEvent) {
+            log.debug("Begin bind keys.");
             GameKeys gameKeys = GameKeys.getInstance();
             ArrayList<Integer> listKeys = gameKeys.getKeyboardKeys(numberMidiKeyEvent);
             switch (statusMidiKey) {
@@ -945,6 +1002,7 @@ public class MainWindow extends JFrame {
                     eventKeyEmit(listKeys, MidiKeyEvent.KEY_RELEASE_EVENT);
                     break;
             }
+            log.debug("Ended bind kyes.");
         }
     }
 }

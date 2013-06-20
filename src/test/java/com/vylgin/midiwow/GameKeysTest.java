@@ -1,6 +1,5 @@
 package com.vylgin.midiwow;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import org.junit.After;
@@ -9,7 +8,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 /**
  *
@@ -18,10 +16,10 @@ import org.junit.Ignore;
 public class GameKeysTest {
     GameKeys gameKeys;
     
-    private static String propertiesNameDir = "properties";
+    private static String gameKeysDirName = GameKeys.getGameKeysDirName();
     private static String dirSeparator = System.getProperty("file.separator");
-    private static String propertiesDirPath = "." + dirSeparator + propertiesNameDir;
-    private static File dirProperties = new File(propertiesDirPath);
+    private static String gameKeysDirPath = "." + dirSeparator + gameKeysDirName;
+    private static File dirProperties = new File(gameKeysDirPath);
     
     public GameKeysTest() {
     }
@@ -94,7 +92,7 @@ public class GameKeysTest {
         keyboardKeys2.add(6);
         
         ArrayList<Integer> test = new ArrayList<Integer>();
-        test.add(-1);
+        test.add(GameKeys.getEmptyNote());
         
         gameKeys.setKeyboardKeys(note2, keyboardKeys2);
         gameKeys.saveKeys("WoW2");    
