@@ -1,4 +1,4 @@
-HTML5 Muffin chocchip steps
+HTML5 Muffin chocchip steps  
 ============================
 
 Run bundle install
