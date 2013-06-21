@@ -25,14 +25,14 @@ textile_ext:   textile
 
 excerpt_separator: "\n\n"
 
-safe:        false
+safe:        true
 watch:       false    # deprecated
 server:      false    # deprecated
 host:        0.0.0.0
 port:        4000
 baseurl:     /
 url:         http://localhost:4000
-lsi:         false
+lsi:         true
 
 maruku:
   use_tex:    false
