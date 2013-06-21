@@ -28,6 +28,7 @@ excerpt_separator: "\n\n"
 safe:        true
 watch:       false    # deprecated
 server:      true    # deprecated
+port:        4000
 baseurl:     /
 lsi:         true
 
