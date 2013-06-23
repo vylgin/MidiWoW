@@ -224,6 +224,7 @@ public class BindKeys extends javax.swing.JFrame {
         list.add(GameKeys.getEmptyNote());
         gameKeys.setKeyboardKeys(number, list);
         
+        virtualMidiKeyboard.clearBacklight();
         virtualMidiKeyboard.backlightNotEmptyKeys();
         log.info("Empty keyboard keys for \"{}\" midi key setted", number);
         
