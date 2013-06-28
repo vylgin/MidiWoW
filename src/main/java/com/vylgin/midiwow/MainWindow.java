@@ -65,11 +65,12 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         log.info("Creating Main Window.");
+        initComponents();
+        
         if (!dirProperties.exists()) {
             createDefaultGameKeys();
         }
-                
-        initComponents();
+        
         selectGameKeysComboBox.setModel(comboBoxModel);
         initializeGameKeysComboBox();
         
