@@ -75,27 +75,27 @@ public class MainWindow extends JFrame {
         initializeGameKeysComboBox();
         
         setStatusBarText(readyStatusBarText);
+
+        setMidiDeviceNames();
+
         log.info("Main Window created.");
-    }
-    
-    /**
-     * Set vector of midi devices to devices combo box.
-     * @param midiDevices vector of midi devices.
-     */
-    public void setMidiDeviceNames(Vector<MidiDevice.Info> midiDevices) {
-        midiDevicesComboBox.setModel(new DefaultComboBoxModel<MidiDevice.Info>(midiDevices));
-        midiMessagesList.setModel(listModel);
-        log.debug("Devices \"{}\" insert in devices combo box.", midiDevices.toString());
     }
     
     public void setStatusBarText(String text) {
         statusLabel.setText(text);
     }
-    
+
     public String getReadyStatusBarText() {
         return readyStatusBarText;
     }
-    
+
+    private void setMidiDeviceNames() {
+        MidiDevice.Info[] midiDevices = MidiSystem.getMidiDeviceInfo();
+        midiDevicesComboBox.setModel(new DefaultComboBoxModel<MidiDevice.Info>(MidiSystem.getMidiDeviceInfo()));
+        midiMessagesList.setModel(listModel);
+        log.debug("Devices \"{}\" insert in devices combo box.", midiDevices.toString());
+    }
+
     private void createDefaultGameKeys() {
         log.info("Creating default Game Keys.");
         dirProperties.mkdir();
