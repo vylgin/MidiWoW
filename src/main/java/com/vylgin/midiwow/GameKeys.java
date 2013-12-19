@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Scanner;
 import org.slf4j.Logger;
@@ -29,15 +30,15 @@ public class GameKeys {
     private static String fileName;
     private static File currentDir = new File(".");
     
-    private ArrayList<ArrayList<Integer>> midiKeys;
+    private Hashtable<Integer, ArrayList<Integer>> midiKeys;
     
     private GameKeys() {
         log.debug("Creating Game Keys.");
-        midiKeys = new ArrayList<ArrayList<Integer>>();
+        midiKeys = new Hashtable<Integer, ArrayList<Integer>>();
         for (int i = 0; i <= midiKeySize; i++) {
             ArrayList<Integer> list = new ArrayList<Integer>();
             list.add(emptyNote);
-            midiKeys.add(list);
+            midiKeys.put(i, list);
         }
         log.debug("Game Keys created.");
     }
@@ -66,7 +67,7 @@ public class GameKeys {
      */
     public void setKeyboardKeys(int note, ArrayList<Integer> keyboardKeys) {
         midiKeys.remove(note);
-        midiKeys.add(note, keyboardKeys);
+        midiKeys.put(note, keyboardKeys);
     }
     
      /**
@@ -179,9 +180,9 @@ public class GameKeys {
             
             for (int i = 0; i <=midiKeySize; i++) {
                 ArrayList<Integer> list = new ArrayList<Integer>();
-                Scanner scaner = new Scanner(props.getProperty(String.valueOf(i)));
-                while (scaner.hasNextInt()) {
-                    list.add(scaner.nextInt());
+                Scanner scanner = new Scanner(props.getProperty(String.valueOf(i)));
+                while (scanner.hasNextInt()) {
+                    list.add(scanner.nextInt());
                 }
                 setKeyboardKeys(i, list);
             }   

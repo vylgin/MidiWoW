@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main class for runing program
+ * Main class for running program
  * @author vylgin
  */
 public class MidiWoW {
