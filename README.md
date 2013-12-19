@@ -2,7 +2,7 @@
 
 **Current Status: Release candidate**
 
-**Current Version: 0.9.6**
+**Current Version: 0.9.7**
 
 **Current Build Status: [![Build Status](https://travis-ci.org/vylgin/MidiWoW.png?branch=master)](https://travis-ci.org/vylgin/MidiWoW)**
 
