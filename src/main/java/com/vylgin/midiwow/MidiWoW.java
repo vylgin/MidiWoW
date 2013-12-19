@@ -1,5 +1,6 @@
 package com.vylgin.midiwow;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 import javax.sound.midi.*;
@@ -32,23 +33,10 @@ public class MidiWoW {
         log.info("MidiWoW started.");
     }
 
-    /**
-     * Method return connected midi devices to PC
-     * @return vector of connected midi devices
-     */
-    public Vector<MidiDevice.Info> getMidiNamesDevicesInfo() {
-        MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-        Vector<MidiDevice.Info> namesMidiDevices = new Vector<MidiDevice.Info>();
-        Collections.addAll(namesMidiDevices, infos);
-        log.info("Getted midi devices info from OS.");
-        return namesMidiDevices;
-    }
-    
     private void go() {
         MainWindow frame = new MainWindow();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 365);
         frame.setVisible(true);
-        frame.setMidiDeviceNames(getMidiNamesDevicesInfo());
     }
  }
