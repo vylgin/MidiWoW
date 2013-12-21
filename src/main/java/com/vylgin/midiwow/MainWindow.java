@@ -961,7 +961,7 @@ public class MainWindow extends JFrame {
                         for (int key : keysEventList) {
                             if (key != GameKeys.getEmptyNote()) {
                                 robot.keyPress(key);
-                                String message = String.format("Pressed key:", KeyEvent.getKeyText(key));
+                                String message = String.format("Pressed key: %s", KeyEvent.getKeyText(key));
                                 listModel.addElement(message);
                                 log.debug(message);
                             }
@@ -976,7 +976,7 @@ public class MainWindow extends JFrame {
                         for (int key : keysEventList) {
                             if (key != GameKeys.getEmptyNote()) {
                                 robot.keyRelease(key); 
-                                String message = String.format("Released key: ", KeyEvent.getKeyText(key));
+                                String message = String.format("Released key: %s", KeyEvent.getKeyText(key));
                                 listModel.addElement(message);
                                 log.debug(message);
                             }
