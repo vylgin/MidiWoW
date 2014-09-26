@@ -1,4 +1,4 @@
-package com.vylgin.midiwow;
+package com.vylgin.midiwow.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import com.vylgin.midiwow.GameKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +87,7 @@ public class VirtualMidiKeyboard extends JPanel{
         GameKeys gameKeys = GameKeys.getInstance();
         for (int i = 0; i < pianoKeys.length; i++) {
             ArrayList<Integer> list = gameKeys.getKeyboardKeys(i);
-            if (!list.get(0).equals(GameKeys.getEmptyNote())) {
+            if (!list.get(0).equals(GameKeys.EMPTY_NOTE)) {
                 if (pianoKeys[i].getName().equals(whiteKeysName)) {
                     pianoKeys[i].setBackground(backgroundWhiteKeyUsed);
                 } else if (pianoKeys[i].getName().equals(blackKeysName)) {
@@ -196,12 +198,12 @@ public class VirtualMidiKeyboard extends JPanel{
 
             for (int j = 0; j < list.size(); j++) {
                 if (j == list.size() - 1 || list.size() == 1) {
-                    result += (list.get(j) == GameKeys.getEmptyNote())
-                            ? GameKeys.emptyKeyText
+                    result += (list.get(j) == GameKeys.EMPTY_NOTE)
+                            ? GameKeys.EMPTY_KEY_TEXT
                             : String.valueOf(KeyEvent.getKeyText(list.get(j)));
                 } else {
-                    result += (list.get(j) == GameKeys.getEmptyNote())
-                            ? GameKeys.emptyKeyText  + " + "
+                    result += (list.get(j) == GameKeys.EMPTY_NOTE)
+                            ? GameKeys.EMPTY_KEY_TEXT + " + "
                             : String.valueOf(KeyEvent.getKeyText(list.get(j))) + " + ";
                 }
             }
@@ -250,7 +252,7 @@ public class VirtualMidiKeyboard extends JPanel{
             label.setBackground(Color.LIGHT_GRAY);
             VirtualMidiKeyboard.this.repaint();
             MainWindow topFrame = (MainWindow) getTopLevelAncestor();
-            topFrame.setStatusBarText("Midi key number: " + label.getText() + ", PC keyboard keys: " + label.getToolTipText() + ".");
+            topFrame.setStatusBarText("Midi key number: " + label.getText() + ", PC keyboard keys: " + label.getToolTipText() + "");
         }
 
         @Override

@@ -1,9 +1,11 @@
-package com.vylgin.midiwow;
+package com.vylgin.midiwow.ui;
 
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+
+import com.vylgin.midiwow.GameKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +69,8 @@ public class BindKeys extends javax.swing.JFrame {
         StringBuilder result = new StringBuilder("");
 
         for (int j = 0; j < list.size(); j++) {
-            if (list.get(j) == GameKeys.getEmptyNote()) {
-                result.append(GameKeys.emptyKeyText);
+            if (list.get(j) == GameKeys.EMPTY_NOTE) {
+                result.append(GameKeys.EMPTY_KEY_TEXT);
             } else {
                 result.append(String.valueOf(KeyEvent.getKeyText(list.get(j))));
             }
@@ -221,7 +223,7 @@ public class BindKeys extends javax.swing.JFrame {
         
         GameKeys gameKeys = GameKeys.getInstance();
         ArrayList<Integer> list = new ArrayList<Integer>();
-        list.add(GameKeys.getEmptyNote());
+        list.add(GameKeys.EMPTY_NOTE);
         gameKeys.setKeyboardKeys(number, list);
         
         virtualMidiKeyboard.clearBacklight();

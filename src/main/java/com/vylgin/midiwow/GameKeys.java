@@ -4,41 +4,42 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
+
+import com.vylgin.midiwow.ui.BindKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.vylgin.midiwow.settings.Config.*;
 
 /**
  * Singleton class to hold the key relationships midi keyboard to PC keyboard keys
  * @author vylgin
  */
 public class GameKeys {
-    public static final String emptyKeyText = "Empty";
+    public static final String EMPTY_KEY_TEXT = "Empty";
+    public static final String GAME_KEYS_FILE_PROPERTIES = ".properties";
+    public static final String GAME_KEYS_DIR_NAME_PROPERTIES = "properties";
+    public static final int EMPTY_NOTE = -1;
+
+    private static final int MIDI_KEY_SIZE = 127;
+
     private volatile static GameKeys gameKeys;
-    
-    private static final String dirSeparator = System.getProperty("file.separator");
-    private static final String gameKeysFileExtension = ".properties";
-    private static final String gameKeysDirName = "properties";
-    private static final int midiKeySize = 127;
-    private static final int emptyNote = -1;
-    
+
     private static Logger log = LoggerFactory.getLogger(BindKeys.class.getName());
     private static Properties props = new Properties();
     private static String fileName;
     private static File currentDir = new File(".");
     
-    private Hashtable<Integer, ArrayList<Integer>> midiKeys;
+    private Map<Integer, ArrayList<Integer>> midiKeyMap;
     
     private GameKeys() {
         log.debug("Creating Game Keys.");
-        midiKeys = new Hashtable<Integer, ArrayList<Integer>>();
-        for (int i = 0; i <= midiKeySize; i++) {
+        midiKeyMap = new HashMap<>();
+        for (int i = 0; i <= MIDI_KEY_SIZE; i++) {
             ArrayList<Integer> list = new ArrayList<Integer>();
-            list.add(emptyNote);
-            midiKeys.put(i, list);
+            list.add(EMPTY_NOTE);
+            midiKeyMap.put(i, list);
         }
         log.debug("Game Keys created.");
     }
@@ -66,32 +67,8 @@ public class GameKeys {
      * @param keyboardKeys code keys PC keyboard
      */
     public void setKeyboardKeys(int note, ArrayList<Integer> keyboardKeys) {
-        midiKeys.remove(note);
-        midiKeys.put(note, keyboardKeys);
-    }
-    
-     /**
-     * 
-     * @return Game Keys file extension
-     */
-    public static String getGameKeysFileExtension() {
-        return gameKeysFileExtension;
-    }
-    
-     /**
-     * 
-     * @return Game Keys dir name
-     */
-    public static String getGameKeysDirName() {
-        return gameKeysDirName;
-    }
-    
-    /**
-     * 
-     * @return empty note
-     */
-    public static int getEmptyNote() {
-        return emptyNote;
+        midiKeyMap.remove(note);
+        midiKeyMap.put(note, keyboardKeys);
     }
     
     /**
@@ -100,7 +77,7 @@ public class GameKeys {
      * @return keys of PC keyboard
      */
     public ArrayList<Integer> getKeyboardKeys(int note) {
-        return midiKeys.get(note);
+        return midiKeyMap.get(note);
     }
     
     /**
@@ -110,12 +87,12 @@ public class GameKeys {
     public boolean createEmptyKeys(String gameName) {
         log.debug("Creating empty keys \"{}\".", gameName);
         try {
-            String fName = gameName + gameKeysFileExtension;
-            String filePath = currentDir.getCanonicalPath() + dirSeparator 
-                    + gameKeysDirName + dirSeparator + fName;
+            String fName = gameName + GAME_KEYS_FILE_PROPERTIES;
+            String filePath = currentDir.getCanonicalPath() + DIR_SEPARATOR
+                    + GAME_KEYS_DIR_NAME_PROPERTIES + DIR_SEPARATOR + fName;
                           
-            for (int i = 0; i <= midiKeySize; i++) {
-                props.setProperty(String.valueOf(i), String.valueOf(emptyNote));
+            for (int i = 0; i <= MIDI_KEY_SIZE; i++) {
+                props.setProperty(String.valueOf(i), String.valueOf(EMPTY_NOTE));
             }
             
             FileOutputStream out = new FileOutputStream(filePath);
@@ -137,12 +114,12 @@ public class GameKeys {
     public boolean saveKeys(String gameName) {    
         log.debug("Saving keys \"{}\".", gameName);
         try {
-            fileName = gameName + gameKeysFileExtension;
-            String filePath = currentDir.getCanonicalPath() + dirSeparator 
-                    + gameKeysDirName + dirSeparator + fileName;    
+            fileName = gameName + GAME_KEYS_FILE_PROPERTIES;
+            String filePath = currentDir.getCanonicalPath() + DIR_SEPARATOR
+                    + GAME_KEYS_DIR_NAME_PROPERTIES + DIR_SEPARATOR + fileName;
             
-            for (int i = 0; i <= midiKeySize; i++) {
-                ArrayList<Integer> list = midiKeys.get(i);
+            for (int i = 0; i <= MIDI_KEY_SIZE; i++) {
+                ArrayList<Integer> list = midiKeyMap.get(i);
                 StringBuilder keys = new StringBuilder("");
                 
                 for (int key : list) {
@@ -171,14 +148,15 @@ public class GameKeys {
     public boolean loadKeys(String gameName) {
         log.debug("Loading keys \"{}\".", gameName);
         try {
-            fileName = gameName + gameKeysFileExtension;
-            String filePath = currentDir.getCanonicalPath() + dirSeparator + gameKeysDirName + dirSeparator + fileName;
+            fileName = gameName + GAME_KEYS_FILE_PROPERTIES;
+            String filePath = currentDir.getCanonicalPath() +
+                    DIR_SEPARATOR + GAME_KEYS_DIR_NAME_PROPERTIES + DIR_SEPARATOR + fileName;
                  
             FileInputStream ins = new FileInputStream(filePath);
             props.load(ins);
             ins.close();
             
-            for (int i = 0; i <=midiKeySize; i++) {
+            for (int i = 0; i <= MIDI_KEY_SIZE; i++) {
                 ArrayList<Integer> list = new ArrayList<Integer>();
                 Scanner scanner = new Scanner(props.getProperty(String.valueOf(i)));
                 while (scanner.hasNextInt()) {
@@ -195,16 +173,16 @@ public class GameKeys {
     }
     
     /**
-     * Delete properties for PC Game Name
-     * @param gameName PC Game Name
+     * Delete properties for Game Name
+     * @param gameName Game Name
      * @return <code>true</code>, if properties file deleted
      */
     public boolean deleteKeys(String gameName) {
         log.debug("Deliting keys \"{}\".", gameName);
         try {
-            String fName = gameName + gameKeysFileExtension;
-            String filePath = currentDir.getCanonicalPath() + dirSeparator 
-                    + gameKeysDirName + dirSeparator + fName;
+            String fName = gameName + GAME_KEYS_FILE_PROPERTIES;
+            String filePath = currentDir.getCanonicalPath() + DIR_SEPARATOR
+                    + GAME_KEYS_DIR_NAME_PROPERTIES + DIR_SEPARATOR + fName;
             File file = new File(filePath);
             file.setWritable(true);
             if (file.delete()) {
@@ -216,5 +194,45 @@ public class GameKeys {
             return false;
         }
         return false;
+    }
+
+    /**
+     * Delete properties for list of Game Names
+     * @param gameKeys list of Game Names
+     */
+    public void deleteKeys(List<String> gameKeys) {
+        for (String gameKey : gameKeys) {
+            deleteKeys(gameKey);
+        }
+
+    }
+
+    /**
+     * Delete all properties for Game Names
+     */
+    public void deleteAllKeys() {
+        List<String> gameNames = getGameNames();
+        for (String gameName : gameNames) {
+            deleteKeys(gameName);
+        }
+    }
+
+    /**
+     * Method scan game keys properties directory and return list of all files names
+     * @return gameNames
+     */
+    public static List<String> getGameNames() {
+        List<String> gameNames = new ArrayList<>();
+        for (String file : DIR_PROPERTIES.list()) {
+            int i = file.lastIndexOf('.');
+            String gameName = file.substring(0, i);
+            String fileExtension = file.substring(i, file.length());
+            if (fileExtension.equals(GameKeys.GAME_KEYS_FILE_PROPERTIES)) {
+                gameNames.add(gameName);
+                log.debug("Added \"{}\" Game Keys in combo box.", gameName);
+            }
+        }
+
+        return gameNames;
     }
 }

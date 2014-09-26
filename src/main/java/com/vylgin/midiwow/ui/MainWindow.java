@@ -1,4 +1,4 @@
-package com.vylgin.midiwow;
+package com.vylgin.midiwow.ui;
 
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sound.midi.MidiDevice;
@@ -21,26 +21,26 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import com.vylgin.midiwow.GameKeys;
+import com.vylgin.midiwow.settings.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.vylgin.midiwow.settings.Config.*;
+import static com.vylgin.midiwow.settings.Config.DIR_SEPARATOR;
 
 /**
  * The main frame at which there are widgets
  * @author vylgin
  */
 public class MainWindow extends JFrame {
-    private static final Pattern patternGameName = Pattern.compile("[a-zA-Z\\d\\s]+");
-    private static final String gameKeysDirName = GameKeys.getGameKeysDirName();
-    private static final String gameKeysFileExtension = GameKeys.getGameKeysFileExtension();
-    private static final String dirSeparator = System.getProperty("file.separator");
-    private static final String propertiesDirPath = "." + dirSeparator + gameKeysDirName;
-    private static final File dirProperties = new File(propertiesDirPath);
-    
-    private static final String readyStatusBarText = "Ready.";
-    private static final String createGameKeysText = "Create new Game Keys profile.";
-    private static final String saveGameKeysText = "Save this Game Keys profile.";
-    private static final String saveAsGameKeysText = "Save As this Game Keys profile.";
-    private static final String deleteGameKeysText = "Delete this Game Keys profile.";
+    private static final Pattern PATTERN_GAME_NAME = Pattern.compile("[a-zA-Z\\d\\s]+");
+    private static final String READY_STATUS_BAR = "Ready.";
+    private static final String CREATE_GAME_KEYS = "Create new Game Keys profile.";
+    private static final String SAVE_GAME_KEYS = "Save this Game Keys profile.";
+    private static final String SAVE_AS_GAME_KEYS = "Save As this Game Keys profile.";
+    private static final String DELETE_GAME_KEYS = "Delete this Game Keys profile.";
     
     private static Logger log = LoggerFactory.getLogger(MainWindow.class.getName());
     
@@ -51,14 +51,6 @@ public class MainWindow extends JFrame {
         KEY_PRESS_EVENT,
         KEY_RELEASE_EVENT
     }
-        
-    /**
-     * 
-     * @return this
-     */
-    public MainWindow getFrame() {
-        return this;
-    }
     
     /**
      * Creates new form MainWindow
@@ -67,14 +59,14 @@ public class MainWindow extends JFrame {
         log.info("Creating Main Window.");
         initComponents();
         
-        if (!dirProperties.exists()) {
+        if (!DIR_PROPERTIES.exists()) {
             createDefaultGameKeys();
         }
         
         selectGameKeysComboBox.setModel(comboBoxModel);
         initializeGameKeysComboBox();
         
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
 
         setMidiDeviceNames();
 
@@ -86,7 +78,7 @@ public class MainWindow extends JFrame {
     }
 
     public String getReadyStatusBarText() {
-        return readyStatusBarText;
+        return READY_STATUS_BAR;
     }
 
     private void setMidiDeviceNames() {
@@ -98,7 +90,7 @@ public class MainWindow extends JFrame {
 
     private void createDefaultGameKeys() {
         log.info("Creating default Game Keys.");
-        dirProperties.mkdir();
+        DIR_PROPERTIES.mkdir();
         String defaultGameKeysName = "Default Game Keys";
         GameKeys gameKeys = GameKeys.getInstance();
         gameKeys.createEmptyKeys(defaultGameKeysName);
@@ -115,14 +107,9 @@ public class MainWindow extends JFrame {
     
     private void initializeGameKeysComboBox() {
         log.info("Initializing Game Keys combo box.");
-        for (String file : dirProperties.list()) {
-            int i = file.lastIndexOf('.');
-            String gameName = file.substring(0, i);
-            String fileExtension = file.substring(i, file.length());
-            if (fileExtension.equals(this.gameKeysFileExtension)) {
-                selectGameKeysComboBox.addItem(gameName);
-                log.debug("Added \"{}\" Game Keys in combo box.", gameName);
-            }
+        List<String> gameNames = GameKeys.getGameNames();
+        for (String gameName : gameNames) {
+            selectGameKeysComboBox.addItem(gameName);
         }
         log.info("Game Keys initialized.");
     }
@@ -146,7 +133,7 @@ public class MainWindow extends JFrame {
     private void createGameKeys() {
         log.info("Creating Game Keys.");
         String gameName = JOptionPane.showInputDialog(this, "Input new Game Keys (English letters and numbers):");
-        Matcher matcher = patternGameName.matcher(gameName);
+        Matcher matcher = PATTERN_GAME_NAME.matcher(gameName);
         if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
             GameKeys gameKeys = GameKeys.getInstance();
             if (gameKeys.createEmptyKeys(gameName)) {
@@ -190,7 +177,7 @@ public class MainWindow extends JFrame {
     private void saveAsGameKeys() {
         log.info("Saving Game Keys as.");
         String gameName = JOptionPane.showInputDialog(this, "Input new Game Keys (English letters and numbers):");
-        Matcher matcher = patternGameName.matcher(gameName);
+        Matcher matcher = PATTERN_GAME_NAME.matcher(gameName);
         String oldGameName = (String) selectGameKeysComboBox.getSelectedItem();
         if (matcher.matches() && comboBoxModel.getIndexOf(gameName) == -1) {
             GameKeys gameKeys = GameKeys.getInstance();
@@ -722,7 +709,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_midiDevicesComboBoxMouseEntered
 
     private void midiDevicesComboBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_midiDevicesComboBoxMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_midiDevicesComboBoxMouseExited
 
     private void selectMidiDeviceButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectMidiDeviceButtonMouseEntered
@@ -730,7 +717,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_selectMidiDeviceButtonMouseEntered
 
     private void selectMidiDeviceButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectMidiDeviceButtonMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_selectMidiDeviceButtonMouseExited
 
     private void selectGameKeysComboBoxMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameKeysComboBoxMouseEntered
@@ -738,39 +725,39 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_selectGameKeysComboBoxMouseEntered
 
     private void selectGameKeysComboBoxMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectGameKeysComboBoxMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_selectGameKeysComboBoxMouseExited
 
     private void createGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createGameKeysButtonMouseEntered
-        setStatusBarText(createGameKeysText);
+        setStatusBarText(CREATE_GAME_KEYS);
     }//GEN-LAST:event_createGameKeysButtonMouseEntered
 
     private void createGameKeysButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createGameKeysButtonMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_createGameKeysButtonMouseExited
 
     private void saveGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveGameKeysButtonMouseEntered
-        setStatusBarText(saveGameKeysText);
+        setStatusBarText(SAVE_GAME_KEYS);
     }//GEN-LAST:event_saveGameKeysButtonMouseEntered
 
     private void saveGameKeysButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveGameKeysButtonMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_saveGameKeysButtonMouseExited
 
     private void saveAsButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsButtonMouseEntered
-        setStatusBarText(saveAsGameKeysText);
+        setStatusBarText(SAVE_AS_GAME_KEYS);
     }//GEN-LAST:event_saveAsButtonMouseEntered
 
     private void saveAsButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsButtonMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_saveAsButtonMouseExited
 
     private void deleteGameKeysButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteGameKeysButtonMouseEntered
-        setStatusBarText(deleteGameKeysText);
+        setStatusBarText(DELETE_GAME_KEYS);
     }//GEN-LAST:event_deleteGameKeysButtonMouseEntered
 
     private void deleteGameKeysButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteGameKeysButtonMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_deleteGameKeysButtonMouseExited
 
     private void exitMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMenuItemMouseEntered
@@ -778,39 +765,39 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_exitMenuItemMouseEntered
 
     private void exitMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_exitMenuItemMouseExited
 
     private void createMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createMenuItemMouseEntered
-        setStatusBarText(createGameKeysText);
+        setStatusBarText(CREATE_GAME_KEYS);
     }//GEN-LAST:event_createMenuItemMouseEntered
 
     private void createMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_createMenuItemMouseExited
 
     private void saveMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMenuItemMouseEntered
-        setStatusBarText(saveGameKeysText);
+        setStatusBarText(SAVE_GAME_KEYS);
     }//GEN-LAST:event_saveMenuItemMouseEntered
 
     private void saveMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_saveMenuItemMouseExited
 
     private void saveAsMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsMenuItemMouseEntered
-        setStatusBarText(saveAsGameKeysText);
+        setStatusBarText(SAVE_AS_GAME_KEYS);
     }//GEN-LAST:event_saveAsMenuItemMouseEntered
 
     private void saveAsMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAsMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_saveAsMenuItemMouseExited
 
     private void deleteMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMenuItemMouseEntered
-        setStatusBarText(deleteGameKeysText);
+        setStatusBarText(DELETE_GAME_KEYS);
     }//GEN-LAST:event_deleteMenuItemMouseEntered
 
     private void deleteMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_deleteMenuItemMouseExited
 
     private void documentationMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_documentationMenuItemMouseEntered
@@ -818,7 +805,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_documentationMenuItemMouseEntered
 
     private void documentationMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_documentationMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_documentationMenuItemMouseExited
 
     private void aboutMidiWoWMenuItemMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aboutMidiWoWMenuItemMouseEntered
@@ -826,7 +813,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_aboutMidiWoWMenuItemMouseEntered
 
     private void aboutMidiWoWMenuItemMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_aboutMidiWoWMenuItemMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_aboutMidiWoWMenuItemMouseExited
 
     private void fileMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuMouseEntered
@@ -834,7 +821,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_fileMenuMouseEntered
 
     private void fileMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_fileMenuMouseExited
 
     private void gameKeysMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gameKeysMenuMouseEntered
@@ -842,7 +829,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_gameKeysMenuMouseEntered
 
     private void gameKeysMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gameKeysMenuMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_gameKeysMenuMouseExited
 
     private void helpMenuMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpMenuMouseEntered
@@ -850,7 +837,7 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_helpMenuMouseEntered
 
     private void helpMenuMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_helpMenuMouseExited
-        setStatusBarText(readyStatusBarText);
+        setStatusBarText(READY_STATUS_BAR);
     }//GEN-LAST:event_helpMenuMouseExited
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -938,7 +925,7 @@ public class MainWindow extends JFrame {
             message.append(": ");
 
             for (int key : keysEventList) {
-                if (key != GameKeys.getEmptyNote()) {
+                if (key != GameKeys.EMPTY_NOTE) {
                     message.append(KeyEvent.getKeyText(key));
                     message.append(" ");
                 }
@@ -959,7 +946,7 @@ public class MainWindow extends JFrame {
                     try {
                         Robot robot = new Robot();
                         for (int key : keysEventList) {
-                            if (key != GameKeys.getEmptyNote()) {
+                            if (key != GameKeys.EMPTY_NOTE) {
                                 robot.keyPress(key);
                                 String message = String.format("Pressed key: %s", KeyEvent.getKeyText(key));
                                 listModel.addElement(message);
@@ -974,7 +961,7 @@ public class MainWindow extends JFrame {
                     try {
                         Robot robot = new Robot();
                         for (int key : keysEventList) {
-                            if (key != GameKeys.getEmptyNote()) {
+                            if (key != GameKeys.EMPTY_NOTE) {
                                 robot.keyRelease(key); 
                                 String message = String.format("Released key: %s", KeyEvent.getKeyText(key));
                                 listModel.addElement(message);

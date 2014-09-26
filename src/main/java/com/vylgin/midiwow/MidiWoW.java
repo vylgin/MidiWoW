@@ -1,10 +1,8 @@
 package com.vylgin.midiwow;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Vector;
-import javax.sound.midi.*;
 import javax.swing.*;
+
+import com.vylgin.midiwow.ui.MainWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +17,6 @@ public class MidiWoW {
         log.info("MidiWoW starting.");
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());                    
-//                    break;
-//                }
-//            }
             System.setProperty("apple.laf.useScreenMenuBar", "true");    
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
