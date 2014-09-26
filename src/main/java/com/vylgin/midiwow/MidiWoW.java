@@ -17,13 +17,17 @@ public class MidiWoW {
     
     public static void main(String[] args) {
         log.info("MidiWoW starting.");
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());                    
+//                    break;
+//                }
+//            }
+            System.setProperty("apple.laf.useScreenMenuBar", "true");    
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException e) {
             log.error("Exception!", e);
         }
