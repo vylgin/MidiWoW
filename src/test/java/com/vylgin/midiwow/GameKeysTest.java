@@ -1,15 +1,12 @@
 package com.vylgin.midiwow;
 
+import com.vylgin.midiwow.settings.Config;
+import org.junit.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vylgin.midiwow.settings.Config;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
@@ -106,7 +103,7 @@ public class GameKeysTest {
         gameKeys.createEmptyKeys(GAME_NAME_2);
         gameKeys.loadKeys(GAME_NAME_2);
         
-        ArrayList<Integer> test = new ArrayList<Integer>();
+        ArrayList<Integer> test = new ArrayList<>();
         test.add(GameKeys.EMPTY_NOTE);
         
         gameKeys.setKeyboardKeys(NOTE_2, keyboardKeys2);

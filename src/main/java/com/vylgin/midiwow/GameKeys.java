@@ -1,16 +1,17 @@
 package com.vylgin.midiwow;
 
+import com.vylgin.midiwow.ui.BindKeys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import com.vylgin.midiwow.ui.BindKeys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.vylgin.midiwow.settings.Config.*;
+import static com.vylgin.midiwow.settings.Config.DIR_PROPERTIES;
+import static com.vylgin.midiwow.settings.Config.DIR_SEPARATOR;
 
 /**
  * Singleton class to hold the key relationships midi keyboard to PC keyboard keys
@@ -37,7 +38,7 @@ public class GameKeys {
         log.debug("Creating Game Keys.");
         midiKeyMap = new HashMap<>();
         for (int i = 0; i <= MIDI_KEY_SIZE; i++) {
-            ArrayList<Integer> list = new ArrayList<Integer>();
+            ArrayList<Integer> list = new ArrayList<>();
             list.add(EMPTY_NOTE);
             midiKeyMap.put(i, list);
         }
@@ -157,7 +158,7 @@ public class GameKeys {
             ins.close();
             
             for (int i = 0; i <= MIDI_KEY_SIZE; i++) {
-                ArrayList<Integer> list = new ArrayList<Integer>();
+                ArrayList<Integer> list = new ArrayList<>();
                 Scanner scanner = new Scanner(props.getProperty(String.valueOf(i)));
                 while (scanner.hasNextInt()) {
                     list.add(scanner.nextInt());

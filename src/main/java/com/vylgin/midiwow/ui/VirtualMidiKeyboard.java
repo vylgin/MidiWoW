@@ -1,18 +1,15 @@
 package com.vylgin.midiwow.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Point;
+import com.vylgin.midiwow.GameKeys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import javax.swing.*;
-
-import com.vylgin.midiwow.GameKeys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Panel virtual piano keyboard
@@ -106,13 +103,13 @@ public class VirtualMidiKeyboard extends JPanel{
      */
     public void clearBacklight() {
         log.debug("Clearning backlight color.");
-        for (int i = 0; i < pianoKeys.length; i++) {
-            if (pianoKeys[i].getName().equals(whiteKeysName)) {
-                pianoKeys[i].setBackground(Color.WHITE);
-                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
-            } else if (pianoKeys[i].getName().equals(blackKeysName)) {
-                pianoKeys[i].setBackground(Color.BLACK);
-                pianoKeys[i].setBorder(BorderFactory.createLineBorder(Color.black));
+        for (JLabel pianoKey : pianoKeys) {
+            if (pianoKey.getName().equals(whiteKeysName)) {
+                pianoKey.setBackground(Color.WHITE);
+                pianoKey.setBorder(BorderFactory.createLineBorder(Color.black));
+            } else if (pianoKey.getName().equals(blackKeysName)) {
+                pianoKey.setBackground(Color.BLACK);
+                pianoKey.setBorder(BorderFactory.createLineBorder(Color.black));
             }
         }
         repaint();
@@ -153,7 +150,7 @@ public class VirtualMidiKeyboard extends JPanel{
       
     private void createKeys() { 
         log.debug("Creating keys.");
-        ArrayList<Integer> wKeys = new ArrayList<Integer>();
+        ArrayList<Integer> wKeys = new ArrayList<>();
         wKeys.add(0); 
         wKeys.add(2);
         wKeys.add(4);
@@ -162,7 +159,7 @@ public class VirtualMidiKeyboard extends JPanel{
         wKeys.add(9);
         wKeys.add(11);
         
-        ArrayList<Integer> bKeys = new ArrayList<Integer>();
+        ArrayList<Integer> bKeys = new ArrayList<>();
         bKeys.add(1);
         bKeys.add(3);
         bKeys.add(6);
@@ -247,7 +244,6 @@ public class VirtualMidiKeyboard extends JPanel{
         @Override
         public void mouseEntered(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
-//            log.debug("Mouse entered on \"{}\" midi key", label.getText());
             keyColor = label.getBackground();
             label.setBackground(Color.LIGHT_GRAY);
             VirtualMidiKeyboard.this.repaint();
@@ -258,7 +254,6 @@ public class VirtualMidiKeyboard extends JPanel{
         @Override
         public void mouseExited(MouseEvent e) {
             JLabel label = (JLabel) e.getSource();
-//            log.debug("Mouse exited of \"{}\" midi key", label.getText());
             label.setBackground(keyColor);
             VirtualMidiKeyboard.this.repaint();
             MainWindow topFrame = (MainWindow) getTopLevelAncestor();
